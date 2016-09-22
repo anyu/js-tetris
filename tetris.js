@@ -27,13 +27,14 @@ var tImage = new Image();
 tImage.src = "shapeT.png";
 
 var L1 = new tetrisPiece(150,20);
+
 var LImage = new Image();
 LImage.src = "shapeL.png";
 
 /***************************
 Game start
 /***************************/
-
+var nextPieceReady = false;
 
 function init() {
   
@@ -41,21 +42,29 @@ function init() {
         context.drawImage(image, x, 560);  
     }
 
-    var update = function() {
-
+    var dropNextPiece = function(nextPiece,nextPieceX,nextPieceY) {
+        // nextPieceY += 1;
+        context.drawImage(nextPiece, nextPieceX, nextPieceY);  
     }
 
-    var draw = function() {
+    var update = function() {
+        
 
+    }
+    var draw = function() {
         t1.y += 1;
         context.clearRect(0,0,canvas.width,canvas.height);
         context.drawImage(tImage,t1.x,t1.y);
+
         background();
 
-        if (t1.y > 560) {
+        if (t1.y >= canvas.height-t1.height) {
             setCurrentPiece(tImage,t1.x);
+            console.log(L1.y);
             L1.y += 1;
-            context.drawImage(LImage,L1.x,L1.y);
+
+            dropNextPiece(LImage,L1.x,L1.y);
+
         }
     }
 
@@ -66,6 +75,7 @@ function init() {
 
     function newGame() {
         gameLoop = setInterval(game, 1);
+        // window.requestAnimationFrame(draw);
     }
 
     newGame();
