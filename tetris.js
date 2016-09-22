@@ -34,22 +34,22 @@ LImage.src = "shapeL.png";
 /***************************
 Game start
 /***************************/
-var nextPieceReady = false;
 
 function init() {
   
-    var setCurrentPiece = function(image,x) {
-        context.drawImage(image, x, 560);  
+    var setCurrentPiece = function(currentPieceImage,currentPiece) {
+        if (currentPiece.y >= canvas.height-currentPiece.height) {
+            context.drawImage(currentPieceImage, currentPiece.x, 560);  
+            L1.y += 1;
+            dropNextPiece(LImage,L1);
+        }
     }
 
-    var dropNextPiece = function(nextPiece,nextPieceX,nextPieceY) {
+    var dropNextPiece = function(nextPieceImage,nextPiece) {
         // nextPieceY += 1;
-        context.drawImage(nextPiece, nextPieceX, nextPieceY);  
-    }
-
-    var update = function() {
-        
-
+        context.drawImage(nextPieceImage, nextPiece.x, nextPiece.y); 
+        setCurrentPiece(nextPieceImage,nextPiece);
+ 
     }
 
     var draw = function() {
@@ -57,21 +57,13 @@ function init() {
         context.clearRect(0,0,canvas.width,canvas.height);
         context.drawImage(tImage,t1.x,t1.y);
 
-        if (t1.y >= canvas.height-t1.height) {
-            setCurrentPiece(tImage,t1.x);
-            L1.y += 1;
-            dropNextPiece(LImage,L1.x,L1.y);
-        }
-
-        if (L1.y >= canvas.height-L1.height) {
-            setCurrentPiece(LImage,L1.x);
-        }
+        setCurrentPiece(tImage,t1);
 
         background();
     }
 
     var game = function() {
-        update();
+        // update();
         draw();
     }
 
