@@ -6,7 +6,7 @@ var context = canvas.getContext("2d");
 Objects
 /***************************/
 
-function tetrisPiece(x,y) {
+function tetrisPiece(x, y) {
     this.x = x;
     this.y = y;
     this.height = 25;
@@ -22,11 +22,11 @@ function background() {
     context.stroke();
 }
 
-var t1 = new tetrisPiece(20,20);
+var t1 = new tetrisPiece(20, 20);
 var tImage = new Image();
 tImage.src = "shapeT.png";
 
-var L1 = new tetrisPiece(150,20);
+var L1 = new tetrisPiece(150, 20);
 
 var LImage = new Image();
 LImage.src = "shapeL.png";
@@ -35,30 +35,27 @@ LImage.src = "shapeL.png";
 Game start
 /***************************/
 
+
+
 function init() {
   
-    var setCurrentPiece = function(currentPieceImage,currentPiece) {
-        if (currentPiece.y >= canvas.height-currentPiece.height) {
+    var setCurrentPiece = function(currentPieceImage, currentPiece) {
+        if ((currentPiece.y >= canvas.height - currentPiece.height)) {
             context.drawImage(currentPieceImage, currentPiece.x, 560);  
-            L1.y += 1;
-            dropNextPiece(LImage,L1);
+            dropPiece(LImage, L1);
         }
     }
 
-    var dropNextPiece = function(nextPieceImage,nextPiece) {
-        // nextPieceY += 1;
+    var dropPiece = function(nextPieceImage, nextPiece) {
+        nextPiece.y += 1;
         context.drawImage(nextPieceImage, nextPiece.x, nextPiece.y); 
-        setCurrentPiece(nextPieceImage,nextPiece);
- 
+        setCurrentPiece(nextPieceImage, nextPiece);
     }
 
-    var draw = function() {
-        t1.y += 1;
-        context.clearRect(0,0,canvas.width,canvas.height);
-        context.drawImage(tImage,t1.x,t1.y);
+    var draw = function() {        
+        context.clearRect(0, 0, canvas.width, canvas.height);
 
-        setCurrentPiece(tImage,t1);
-
+        dropPiece(tImage, t1);
         background();
     }
 
