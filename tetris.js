@@ -6,11 +6,13 @@ var context = canvas.getContext("2d");
 Objects
 /***************************/
 
-var x = 50;
-var y = 50;
-var piece = new Image();
-piece.onload = start;
-piece.src = "shapeT.png";
+function tetrisPiece(x,y) {
+    this.x = x;
+    this.y = y;
+    this.height = 25;
+    this.width = 25;
+    this.color = "red";
+}
 
 function background() {
     context.beginPath();
@@ -20,22 +22,51 @@ function background() {
     context.stroke();
 }
 
+var t1 = new tetrisPiece(20,20);
+var tImage = new Image();
+tImage.src = "shapeT.png";
+
+var L1 = new tetrisPiece(150,20);
+var LImage = new Image();
+LImage.src = "shapeL.png";
+
 /***************************
 Game start
 /***************************/
 
-function start() {
-    initiate();
-}
 
-function initiate() {
-    requestAnimationFrame(initiate);
-    y += 2;
-    context.clearRect(0,0,canvas.width,canvas.height);
-    background();
+function init() {
+  
+    var update = function() {
 
-    if (piece.y < 600) {
-        context.drawImage(piece,x,y);
     }
+
+    var draw = function() {
+
+        t1.y += 1;
+        context.clearRect(0,0,canvas.width,canvas.height);
+        context.drawImage(tImage,t1.x,t1.y);
+        background();
+
+        if (t1.y > canvas.height) {
+            L1.y += 1;
+            context.drawImage(LImage,L1.x,L1.y);
+        }
+    }
+
+    var game = function() {
+        update();
+        draw();
+    }
+
+    function newGame() {
+        gameLoop = setInterval(game, 1);
+    }
+
+    newGame();
 }
+
+init();
+
+
 
