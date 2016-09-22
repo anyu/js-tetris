@@ -51,21 +51,23 @@ function init() {
         
 
     }
+
     var draw = function() {
         t1.y += 1;
         context.clearRect(0,0,canvas.width,canvas.height);
         context.drawImage(tImage,t1.x,t1.y);
 
-        background();
-
         if (t1.y >= canvas.height-t1.height) {
             setCurrentPiece(tImage,t1.x);
-            console.log(L1.y);
             L1.y += 1;
-
             dropNextPiece(LImage,L1.x,L1.y);
-
         }
+
+        if (L1.y >= canvas.height-L1.height) {
+            setCurrentPiece(LImage,L1.x);
+        }
+
+        background();
     }
 
     var game = function() {
