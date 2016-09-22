@@ -37,6 +37,10 @@ Game start
 
 function init() {
   
+    var setCurrentPiece = function(image,x) {
+        context.drawImage(image, x, 560);  
+    }
+
     var update = function() {
 
     }
@@ -48,7 +52,8 @@ function init() {
         context.drawImage(tImage,t1.x,t1.y);
         background();
 
-        if (t1.y > canvas.height) {
+        if (t1.y > 560) {
+            setCurrentPiece(tImage,t1.x);
             L1.y += 1;
             context.drawImage(LImage,L1.x,L1.y);
         }
