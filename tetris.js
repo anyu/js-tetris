@@ -43,39 +43,55 @@ Game start
 
 
 var bool = true;
+var i = 0;
+var gameRunning = false;
 
 function init() {
-  
+    gameRunning = true;
+
+    var game = function() {
+        draw();
+    }
+
+    var dropPiece = function(piece) {
+        console.log(piece);
+        piece.y += 1;
+        context.drawImage(piece.image, piece.x, piece.y); 
+        setCurrentPiece(piece);
+    }
+
+    var draw = function() {        
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        dropPiece(piecesArray[i]);
+        background();
+    }    
+
     var setCurrentPiece = function(currentPiece) {
-        if ((currentPiece.y >= canvas.height - currentPiece.height)) {
-            context.drawImage(currentPiece.image, currentPiece.x, 560);  
-            if (bool) {
-                dropPiece(piecesArray[1]);
+        if (currentPiece.y >= (canvas.height - currentPiece.height)) {
+            context.drawImage(currentPiece.image, currentPiece.x, 560);
+            console.log('piece' + i + 'is at bottom of screen');  
+            i++;
+            if (i < piecesArray.length) {
+                dropPiece(piecesArray[i]);
+            }
+            else {
+                endGame();
             }
 
         }
     }
 
-    var dropPiece = function(nextPiece) {
-        nextPiece.y += 1;
-        context.drawImage(nextPiece.image, nextPiece.x, nextPiece.y); 
-        setCurrentPiece(nextPiece);
-    }
+    function endGame() {
+        gameRunning = false;
+        clearInterval(gameLoop);
+        return;
+    };
 
-    var draw = function() {        
-        context.clearRect(0, 0, canvas.width, canvas.height);
-
-        dropPiece(piecesArray[0]);
-        background();
-    }
-
-    var game = function() {
-        // update();
-        draw();
-    }
 
     function newGame() {
-        gameLoop = setInterval(game, 1);
+        if (gameRunning) {
+            gameLoop = setInterval(game, 1);            
+        }
         // window.requestAnimationFrame(draw);
     }
 
