@@ -13,6 +13,7 @@ function tetrisPiece(x, y) {
     this.width = 25;
     this.color = "red";
     this.image;
+    this.visible = false;
 }
 
 function background() {
@@ -55,11 +56,14 @@ function init() {
         background();
 
         for (var j = 0; j < piecesArray.length; j++) {
-            context.drawImage(piecesArray[j].image, piecesArray[j].x, piecesArray[j].y);
+            if (piecesArray[j].visible) {
+                context.drawImage(piecesArray[j].image, piecesArray[j].x, piecesArray[j].y);
+            }
         }
     }    
 
     var dropPiece = function(piece) {
+        piece.visible = true;
         piece.y += 1;
         setCurrentPiece(piece);
     }
