@@ -11,7 +11,6 @@ function tetrisPiece(x, y) {
     this.y = y;
     this.height = 25;
     this.width = 25;
-    this.color = "red";
     this.image;
     this.visible = false;
 }
@@ -24,12 +23,12 @@ function background() {
     context.stroke();
 }
 
-var t1 = new tetrisPiece(20, 20);
+var t1 = new tetrisPiece(20, 0);
 var tImage = new Image();
 tImage.src = "shapeT.png";
 t1.image = tImage;
 
-var L1 = new tetrisPiece(150, 20);
+var L1 = new tetrisPiece(150, 0);
 var LImage = new Image();
 LImage.src = "shapeL.png";
 L1.image = LImage;
@@ -43,6 +42,17 @@ Game start
 /***************************/
 
 var i = 0;
+
+addEventListener( "keydown", function(e) {    
+    if(e.keyCode == 65) {
+        t1.x -= 5;
+    }
+
+    if(e.keyCode == 68) {
+        t1.x += 5;
+    }
+
+});
 
 function init() {
 
