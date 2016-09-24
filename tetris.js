@@ -46,6 +46,10 @@ var i = 0;
 
 function init() {
 
+    window.addEventListener('keydown', function(e) {
+        t1.x += 10;
+    },false);
+
     var game = function() {
         draw();
     }
