@@ -1,7 +1,6 @@
 var canvas = document.getElementById("grid");
 var context = canvas.getContext("2d");
 
-
 /***************************
 Objects
 /***************************/
@@ -43,18 +42,32 @@ Game start
 /***************************/
 
 var i = 0;
+// var shapes = [I,J,L,O,S,T,Z];
 
 function init() {
 
-    window.addEventListener('keydown', function(e) {
-        if (e.keyCode == '65') {
-            t1.x -= 3;
-        };
+    function drawShape(shape, direction, x) {
+        for (var row = 0; row < shape.length; row++) {
+            for (var column = 0; column < shape.length+1; column++) {
+                if ((shape[direction][row][column]) == 0) {
+                    console.log("IT'S A ZERO", x);
 
-        if (e.keyCode == '68') {
-            t1.x += 3;
-        };
-    },false);
+                }
+                else if ((shape[direction][row][column]) == 1) {
+                    console.log("IT'S A ONE", x);
+
+                    context.beginPath();
+                    context.rect(x, 20, 20,20);
+                    context.lineWidth = 1;
+                    context.strokeStyle = '#dddddd';
+                    context.stroke();
+
+                }
+                x += 20;
+
+            }
+        } 
+    }
 
     var game = function() {
         draw();
@@ -62,9 +75,11 @@ function init() {
 
     var draw = function() {        
         context.clearRect(0, 0, canvas.width, canvas.height);
+
         dropPiece(piecesArray[i]);
         background();
 
+        drawShape(I, 0,0);
         for (var j = 0; j < piecesArray.length; j++) {
             if (piecesArray[j].visible) {
                 context.drawImage(piecesArray[j].image, piecesArray[j].x, piecesArray[j].y);
@@ -75,10 +90,10 @@ function init() {
     var dropPiece = function(piece) {
         piece.visible = true;
         piece.y += 1;
-        setCurrentPiece(piece);
+        setPiece(piece);
     }
 
-    var setCurrentPiece = function(currentPiece) {
+    var setPiece = function(currentPiece) {
         if (currentPiece.y >= (canvas.height - currentPiece.height)) {
             currentPiece.y = 560;
             i++;
@@ -96,10 +111,19 @@ function init() {
         clearInterval(gameLoop);
     };
 
-
     function newGame() {
         gameLoop = setInterval(game, 1);            
     }
+
+    window.addEventListener('keydown', function(e) {
+        if (e.keyCode == '65') {
+            t1.x -= 3;
+        };
+
+        if (e.keyCode == '68') {
+            t1.x += 3;
+        };
+    },false);
 
     newGame();
 }
