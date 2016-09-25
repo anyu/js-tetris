@@ -14,7 +14,7 @@ function tetrisPiece(x, y) {
     this.visible = false;
 }
 
-function createPiece (x, y, color) {
+function tetrisPiece2 (x, y, color) {
     context.beginPath();
     context.fillStyle = color;
     context.fillRect(x, y, 20,20);
@@ -22,6 +22,7 @@ function createPiece (x, y, color) {
     context.lineWidth = 2;
     context.strokeStyle = '#1E8C91';
     context.stroke();
+    this.visible = false;
 }
 
 function background() {
@@ -52,20 +53,22 @@ Game start
 
 var i = 0;
 var shapes = [I,J,L,O,S,T,Z];
+var randomShape = Math.floor(Math.random() * shapes.length);
+var randomDirection = Math.floor(Math.random() * shapes[randomShape].length);
 
 function init() {
 
     function drawShape(shape, direction, x, y) {
         for (var row = 0; row < shape.length-1; row++) {
-            for (var column = 0; column < shape.length-1; column++) {
+            for (var column = 0; column < shape.length; column++) {
                 if ((shape[direction][row][column]) == 0) {
                 }
                 else if ((shape[direction][row][column]) == 1) {
-                    createPiece(x,y, "#66999B");
+                    tetrisPiece2(x,y, "#66999B");
                 }
                 x += 20;
             }
-            x = 0;
+            x = 40;
             y += 20;
         } 
     }
@@ -80,8 +83,7 @@ function init() {
         dropPiece(piecesArray[i]);
         background();
 
-        //shape, direction, x, y
-        drawShape(T, 0, 0, 0);
+        drawShape(shapes[randomShape], randomDirection, 40, 0);
 
         for (var j = 0; j < piecesArray.length; j++) {
             if (piecesArray[j].visible) {
