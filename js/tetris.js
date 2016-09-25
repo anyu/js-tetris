@@ -14,7 +14,7 @@ function tetrisPiece(x, y) {
     this.visible = false;
 }
 
-function tetrisPiece2 (x, y, color) {
+function tetrisSquare (x, y, color) {
     context.beginPath();
     context.fillStyle = color;
     context.fillRect(x, y, 20,20);
@@ -58,13 +58,14 @@ var randomDirection = Math.floor(Math.random() * shapes[randomShape].length);
 
 function init() {
 
-    function drawShape(shape, direction, x, y) {
+    function generateShape(shape, direction, x, y) {
+
         for (var row = 0; row < shape.length-1; row++) {
             for (var column = 0; column < shape.length; column++) {
                 if ((shape[direction][row][column]) == 0) {
                 }
                 else if ((shape[direction][row][column]) == 1) {
-                    tetrisPiece2(x,y, "#66999B");
+                    tetrisSquare(x,y, "#66999B");
                 }
                 x += 20;
             }
@@ -81,9 +82,10 @@ function init() {
         context.clearRect(0, 0, canvas.width, canvas.height);
 
         dropPiece(piecesArray[i]);
+        generateShape(shapes[randomShape], randomDirection, 40, 20);
+        // var tpiece = generateShape(shapes[randomShape], randomDirection, 40, 20);
+        // dropPiece(tpiece);
         background();
-
-        drawShape(shapes[randomShape], randomDirection, 40, 0);
 
         for (var j = 0; j < piecesArray.length; j++) {
             if (piecesArray[j].visible) {
