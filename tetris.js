@@ -10,9 +10,18 @@ function tetrisPiece(x, y) {
     this.y = y;
     this.height = 25;
     this.width = 25;
-    this.color = "red";
     this.image;
     this.visible = false;
+}
+
+function createPiece (x, y, color) {
+    context.beginPath();
+    context.fillStyle = color;
+    context.fillRect(x, y, 20,20);
+    context.rect(x, y, 20,20);
+    context.lineWidth = 2;
+    context.strokeStyle = '#1E8C91';
+    context.stroke();
 }
 
 function background() {
@@ -42,30 +51,22 @@ Game start
 /***************************/
 
 var i = 0;
-// var shapes = [I,J,L,O,S,T,Z];
+var shapes = [I,J,L,O,S,T,Z];
 
 function init() {
 
-    function drawShape(shape, direction, x) {
-        for (var row = 0; row < shape.length; row++) {
-            for (var column = 0; column < shape.length+1; column++) {
+    function drawShape(shape, direction, x, y) {
+        for (var row = 0; row < shape.length-1; row++) {
+            for (var column = 0; column < shape.length-1; column++) {
                 if ((shape[direction][row][column]) == 0) {
-                    console.log("IT'S A ZERO", x);
-
                 }
                 else if ((shape[direction][row][column]) == 1) {
-                    console.log("IT'S A ONE", x);
-
-                    context.beginPath();
-                    context.rect(x, 20, 20,20);
-                    context.lineWidth = 1;
-                    context.strokeStyle = '#dddddd';
-                    context.stroke();
-
+                    createPiece(x,y, "#66999B");
                 }
                 x += 20;
-
             }
+            x = 0;
+            y += 20;
         } 
     }
 
@@ -79,7 +80,9 @@ function init() {
         dropPiece(piecesArray[i]);
         background();
 
-        drawShape(I, 0,0);
+        //shape, direction, x, y
+        drawShape(T, 0, 0, 0);
+
         for (var j = 0; j < piecesArray.length; j++) {
             if (piecesArray[j].visible) {
                 context.drawImage(piecesArray[j].image, piecesArray[j].x, piecesArray[j].y);
