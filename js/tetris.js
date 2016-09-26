@@ -1,7 +1,6 @@
 var canvas = document.getElementById("grid");
 var context = canvas.getContext("2d");
 
-
 /***************************
 Objects
 /***************************/
@@ -12,6 +11,17 @@ function tetrisPiece(x, y) {
     this.height = 25;
     this.width = 25;
     this.image;
+    this.visible = false;
+}
+
+function tetrisSquare (x, y, color) {
+    context.beginPath();
+    context.fillStyle = color;
+    context.fillRect(x, y, 20,20);
+    context.rect(x, y, 20,20);
+    context.lineWidth = 2;
+    context.strokeStyle = '#1E8C91';
+    context.stroke();
     this.visible = false;
 }
 
@@ -42,6 +52,9 @@ Game start
 /***************************/
 
 var i = 0;
+var shapes = [I,J,L,O,S,T,Z];
+var randomShape = Math.floor(Math.random() * shapes.length);
+var randomDirection = Math.floor(Math.random() * shapes[randomShape].length);
 
 addEventListener( "keydown", function(e) {    
     if(e.keyCode == 65) {
@@ -56,13 +69,33 @@ addEventListener( "keydown", function(e) {
 
 function init() {
 
+    function generateShape(shape, direction, x, y) {
+
+        for (var row = 0; row < shape.length-1; row++) {
+            for (var column = 0; column < shape.length; column++) {
+                if ((shape[direction][row][column]) == 0) {
+                }
+                else if ((shape[direction][row][column]) == 1) {
+                    tetrisSquare(x,y, "#66999B");
+                }
+                x += 20;
+            }
+            x = 40;
+            y += 20;
+        } 
+    }
+
     var game = function() {
         draw();
     }
 
     var draw = function() {        
         context.clearRect(0, 0, canvas.width, canvas.height);
+
         dropPiece(piecesArray[i]);
+        generateShape(shapes[randomShape], randomDirection, 40, 20);
+        // var tpiece = generateShape(shapes[randomShape], randomDirection, 40, 20);
+        // dropPiece(tpiece);
         background();
 
         for (var j = 0; j < piecesArray.length; j++) {
@@ -75,10 +108,10 @@ function init() {
     var dropPiece = function(piece) {
         piece.visible = true;
         piece.y += 1;
-        setCurrentPiece(piece);
+        setPiece(piece);
     }
 
-    var setCurrentPiece = function(currentPiece) {
+    var setPiece = function(currentPiece) {
         if (currentPiece.y >= (canvas.height - currentPiece.height)) {
             currentPiece.y = 560;
             i++;
@@ -96,10 +129,19 @@ function init() {
         clearInterval(gameLoop);
     };
 
-
     function newGame() {
         gameLoop = setInterval(game, 1);            
     }
+
+    window.addEventListener('keydown', function(e) {
+        if (e.keyCode == '65') {
+            t1.x -= 3;
+        };
+
+        if (e.keyCode == '68') {
+            t1.x += 3;
+        };
+    },false);
 
     newGame();
 }
