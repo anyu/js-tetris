@@ -7,11 +7,35 @@ Objects
 
 var i = 0;
 
+var tPiece = function (x, y) {
+    this.x = x;
+    this.y = y;
+    this.height = 40;
+    this.width = 60;
+    this.visible = false;
+
+    tPiece.prototype.draw = function(xPos, yPos) {
+        formBrick(T, 0, xPos, yPos, '#66999B', '#1E8C91');
+    }
+}
+
+var lPiece = function (x, y) {
+    this.x = x;
+    this.y = y;
+    this.height = 40;
+    this.width = 20;
+    this.visible = false;
+
+    lPiece.prototype.draw = function(xPos,yPos) {
+        formBrick(L, 0, xPos, yPos, '#F5A623', '#D08916');
+    }
+}
+
 function formBrick(shape,direction,xPos,yPos,fillColor, strokeColor) {
-  
+    var xPosOrig = xPos;
+    var yPosOrig = yPos;
     for (var row = 0; row < shape.length-1; row++) {
         for (var column = 0; column < shape.length-1; column++) {
-            console.log('row is: ' + row, 'column is: ' + column, 'fill is: ' + shape[direction][row][column])
 ;    
             if ((shape[direction][row][column]) == 1) {
                 context.beginPath();
@@ -24,57 +48,8 @@ function formBrick(shape,direction,xPos,yPos,fillColor, strokeColor) {
                         }
             xPos += 20;
         }
-        xPos = this.x;
+        xPos = xPosOrig;
         yPos += 20;
-    }
-}
-
-var tPiece = function (x, y) {
-    this.x = x;
-    this.y = y;
-    this.height = 40;
-    this.width = 60;
-    this.visible = false;
-
-    tPiece.prototype.draw = function() {
-        formBrick(T, 0, this.x, this.y, '#66999B', '#1E8C91');
-
-        formBrick(T, 0, this.x, this.y, '#66999B', '#1E8C91');
-
-        formBrick(T, 0, this.x, this.y, '#66999B', '#1E8C91');
-
-        formBrick(T, 0, this.x, this.y, '#66999B', '#1E8C91');
-    }
-}
-
-var lPiece = function (direction, x, y) {
-    this.x = x;
-    this.y = y;
-    this.height = 60;
-    this.width = 20;
-    this.visible = false;
-
-    lPiece.prototype.draw = function(xPos,yPos) {
-        var xPos = this.x;
-        var yPos = this.y;
-        for (var row = 0; row < L.length-1; row++) {
-            for (var column = 0; column < L.length; column++) {
-                if ((L[direction][row][column]) == 0) {
-                }
-                else if ((L[direction][row][column]) == 1) {
-                    context.beginPath();
-                    context.rect(xPos, yPos, 20,20);
-                    context.lineWidth = 1;
-                    context.fillStyle = '#F5A623';
-                    context.strokeStyle = '#D08916';
-                    context.fill();
-                    context.stroke();
-                }
-                xPos += 20;
-            }
-            xPos = this.x;
-            yPos += 20;
-        }
     }
 }
 
@@ -87,7 +62,7 @@ function background() {
 }
 
 var tPiece1 = new tPiece(50,0);
-var lPiece1 = new lPiece(1,200,0);
+var lPiece1 = new lPiece(200,0);
 
 var piecesArray = [];
 piecesArray.push(tPiece1);
