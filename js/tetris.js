@@ -5,24 +5,52 @@ var context = canvas.getContext("2d");
 Objects
 /***************************/
 
-function tetrisPiece(x, y) {
+var i = 0;
+var shapes = [I,J,L,O,S,T,Z];
+
+var tetrisPiece = function (x, y) {
     this.x = x;
     this.y = y;
-    this.height = 25;
-    this.width = 25;
-    this.image;
+    this.height = 40;
+    this.width = 100;
     this.visible = false;
+    this.shape = shapes[randomShape()];
+    this.direction = 0;
+
+    tetrisPiece.prototype.draw = function() {
+        formBrick(this.shape, this.direction, this.x, this.y, '#66999B', '#1E8C91');
+    }
 }
 
-function tetrisSquare (x, y, color) {
-    context.beginPath();
-    context.fillStyle = color;
-    context.fillRect(x, y, 20,20);
-    context.rect(x, y, 20,20);
-    context.lineWidth = 2;
-    context.strokeStyle = '#1E8C91';
-    context.stroke();
-    this.visible = false;
+function randomShape() {
+    var result = Math.floor(Math.random() * shapes.length);
+    return result;
+} 
+
+function randomDirection() {
+    var result = Math.floor(Math.random() * shapes[randomShape()].length)
+    return result;
+} 
+
+function formBrick(shape,direction,xPos,yPos,fillColor, strokeColor) {
+    var xPosOrig = xPos;
+    var yPosOrig = yPos;
+    for (var row = 0; row < shape.length-1; row++) {
+        for (var column = 0; column < shape.length-1; column++) { 
+            if ((shape[direction][row][column]) == 1) {
+                context.beginPath();
+                context.rect(xPos, yPos, 20,20);
+                context.lineWidth = 1;
+                context.fillStyle = fillColor;
+                context.strokeStyle = strokeColor;
+                context.fill();
+                context.stroke();
+            }
+            xPos += 20;
+        }
+        xPos = xPosOrig;
+        yPos += 20;
+    }
 }
 
 function background() {
@@ -33,46 +61,38 @@ function background() {
     context.stroke();
 }
 
-var t1 = new tetrisPiece(20, 20);
-var tImage = new Image();
-tImage.src = "shapeT.png";
-t1.image = tImage;
-
-var L1 = new tetrisPiece(150, 20);
-var LImage = new Image();
-LImage.src = "shapeL.png";
-L1.image = LImage;
+var tetrisPiece1 = new tetrisPiece(50,0);
+var tetrisPiece2 = new tetrisPiece(200,0);
 
 var piecesArray = [];
-piecesArray.push(t1);
-piecesArray.push(L1);
+piecesArray.push(tetrisPiece1);
+piecesArray.push(tetrisPiece2);
 
 /***************************
 Game start
 /***************************/
 
-var i = 0;
-var shapes = [I,J,L,O,S,T,Z];
-var randomShape = Math.floor(Math.random() * shapes.length);
-var randomDirection = Math.floor(Math.random() * shapes[randomShape].length);
+addEventListener( "keydown", function(e) {    
+    if(e.keyCode == 65) {
+        piecesArray[i].x -= 5;
+    }
+
+    if(e.keyCode == 68) {
+        piecesArray[i].x += 5;
+    }
+
+    if(e.keyCode == 82) {
+        if (piecesArray[i].direction+1 > 3) {
+            piecesArray[i].direction = 0;
+        }
+        else {
+            piecesArray[i].direction += 1;
+        }
+    }
+
+});
 
 function init() {
-
-    function generateShape(shape, direction, x, y) {
-
-        for (var row = 0; row < shape.length-1; row++) {
-            for (var column = 0; column < shape.length; column++) {
-                if ((shape[direction][row][column]) == 0) {
-                }
-                else if ((shape[direction][row][column]) == 1) {
-                    tetrisSquare(x,y, "#66999B");
-                }
-                x += 20;
-            }
-            x = 40;
-            y += 20;
-        } 
-    }
 
     var game = function() {
         draw();
@@ -82,14 +102,11 @@ function init() {
         context.clearRect(0, 0, canvas.width, canvas.height);
 
         dropPiece(piecesArray[i]);
-        generateShape(shapes[randomShape], randomDirection, 40, 20);
-        // var tpiece = generateShape(shapes[randomShape], randomDirection, 40, 20);
-        // dropPiece(tpiece);
         background();
-
+        
         for (var j = 0; j < piecesArray.length; j++) {
-            if (piecesArray[j].visible) {
-                context.drawImage(piecesArray[j].image, piecesArray[j].x, piecesArray[j].y);
+            if (piecesArray[j].visible) {  
+                piecesArray[j].draw(piecesArray[j].x, piecesArray[j].y);
             }
         }
     }    
@@ -102,7 +119,6 @@ function init() {
 
     var setPiece = function(currentPiece) {
         if (currentPiece.y >= (canvas.height - currentPiece.height)) {
-            currentPiece.y = 560;
             i++;
             if (i < piecesArray.length) {
                 dropPiece(piecesArray[i]);
@@ -121,16 +137,6 @@ function init() {
     function newGame() {
         gameLoop = setInterval(game, 1);            
     }
-
-    window.addEventListener('keydown', function(e) {
-        if (e.keyCode == '65') {
-            t1.x -= 3;
-        };
-
-        if (e.keyCode == '68') {
-            t1.x += 3;
-        };
-    },false);
 
     newGame();
 }
