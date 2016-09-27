@@ -8,21 +8,27 @@ Objects
 var i = 0;
 var shapes = [I,J,L,O,S,T,Z];
 
-var tetrisPiece = function (x, y, fillColor) {
+var tetrisPiece = function (x, y) {
     this.x = x;
     this.y = y;
     this.height = 40;
     this.width = 100;
     this.visible = false;
     this.shape = shapes[randomShape()];
+    this.direction = 0;
 
-    tetrisPiece.prototype.draw = function(xPos, yPos) {
-        formBrick(this.shape, 0, xPos, yPos, '#66999B', '#1E8C91');
+    tetrisPiece.prototype.draw = function() {
+        formBrick(this.shape, this.direction, this.x, this.y, '#66999B', '#1E8C91');
     }
 }
 
 function randomShape() {
     var result = Math.floor(Math.random() * shapes.length);
+    return result;
+} 
+
+function randomDirection() {
+    var result = Math.floor(Math.random() * shapes[randomShape()].length)
     return result;
 } 
 
@@ -66,15 +72,22 @@ piecesArray.push(tetrisPiece2);
 Game start
 /***************************/
 
-
-
 addEventListener( "keydown", function(e) {    
     if(e.keyCode == 65) {
-        t1.x -= 5;
+        piecesArray[i].x -= 5;
     }
 
     if(e.keyCode == 68) {
-        t1.x += 5;
+        piecesArray[i].x += 5;
+    }
+
+    if(e.keyCode == 82) {
+        if (piecesArray[i].direction+1 > 3) {
+            piecesArray[i].direction = 0;
+        }
+        else {
+            piecesArray[i].direction += 1;
+        }
     }
 
 });
@@ -124,16 +137,6 @@ function init() {
     function newGame() {
         gameLoop = setInterval(game, 1);            
     }
-
-    window.addEventListener('keydown', function(e) {
-        if (e.keyCode == '65') {
-            t1.x -= 3;
-        };
-
-        if (e.keyCode == '68') {
-            t1.x += 3;
-        };
-    },false);
 
     newGame();
 }
