@@ -6,20 +6,34 @@ Objects
 /***************************/
 
 var i = 0;
-var shapes = [I,J,L,O,S,T,Z];
+// var shapes = [I,J,L,O,S,T,Z];
+var shapes = [I,J,L,S,T,Z];
+var blockSize = 30;
 
-var tetrisPiece = function (x, y) {
+var tetrisPiece = function (x, y, fillColor, strokeColor) {
     this.x = x;
     this.y = y;
-    this.height = 40;
-    this.width = 100;
-    this.visible = false;
+    this.height = blockSize *3;
+    this.width = blockSize *2;
     this.shape = shapes[randomShape()];
-    this.direction = 0;
+    this.direction = randomDirection();
+    this.fillColor = fillColor;
+    this.strokeColor = strokeColor;
+    this.visible = false;
 
     tetrisPiece.prototype.draw = function() {
-        formBrick(this.shape, this.direction, this.x, this.y, '#66999B', '#1E8C91');
+        formBrick(this.shape, this.direction, this.x, this.y, this.fillColor, this.strokeColor);
     }
+    
+    tetrisPiece.prototype.rotate = function() {
+        if (this.direction+1 > 3) {
+            this.direction = 0;
+        }
+        else {
+            this.direction += 1;
+        }
+    }
+
 }
 
 function randomShape() {
@@ -39,17 +53,17 @@ function formBrick(shape,direction,xPos,yPos,fillColor, strokeColor) {
         for (var column = 0; column < shape.length-1; column++) { 
             if ((shape[direction][row][column]) == 1) {
                 context.beginPath();
-                context.rect(xPos, yPos, 20,20);
-                context.lineWidth = 1;
+                context.rect(xPos, yPos, blockSize, blockSize);
+                context.lineWidth = 2;
                 context.fillStyle = fillColor;
                 context.strokeStyle = strokeColor;
                 context.fill();
                 context.stroke();
             }
-            xPos += 20;
+            xPos += blockSize;
         }
         xPos = xPosOrig;
-        yPos += 20;
+        yPos += blockSize;
     }
 }
 
@@ -61,36 +75,18 @@ function background() {
     context.stroke();
 }
 
-var tetrisPiece1 = new tetrisPiece(50,0);
-var tetrisPiece2 = new tetrisPiece(200,0);
+var tetrisPiece1 = new tetrisPiece(Math.floor(Math.random() * canvas.width),0,'#66999B','#1E8C91');
+var tetrisPiece2 = new tetrisPiece(Math.floor(Math.random() * canvas.width),0, '#F5A623', '#D08916');
+var tetrisPiece3 = new tetrisPiece(Math.floor(Math.random() * canvas.width),0, '#FA4E4E', '#DD4646');
 
 var piecesArray = [];
 piecesArray.push(tetrisPiece1);
 piecesArray.push(tetrisPiece2);
+piecesArray.push(tetrisPiece3);
 
 /***************************
 Game start
 /***************************/
-
-addEventListener( "keydown", function(e) {    
-    if(e.keyCode == 65) {
-        piecesArray[i].x -= 5;
-    }
-
-    if(e.keyCode == 68) {
-        piecesArray[i].x += 5;
-    }
-
-    if(e.keyCode == 82) {
-        if (piecesArray[i].direction+1 > 3) {
-            piecesArray[i].direction = 0;
-        }
-        else {
-            piecesArray[i].direction += 1;
-        }
-    }
-
-});
 
 function init() {
 
@@ -130,6 +126,13 @@ function init() {
         }
     }
 
+    function checkIfOccupied() {
+        if (piecesArray[i].y) {
+            alert("I'm occupied");
+        }
+
+    }
+
     function endGame() {
         clearInterval(gameLoop);
     };
@@ -137,6 +140,30 @@ function init() {
     function newGame() {
         gameLoop = setInterval(game, 1);            
     }
+
+    addEventListener( "keydown", function(e) {    
+
+    // A moves left
+    if(e.keyCode == 65 && piecesArray[i].x > 5) {
+        piecesArray[i].x -= 10;
+    }
+
+    // D moves right
+    if(e.keyCode == 68 && piecesArray[i].x < 300) {
+        piecesArray[i].x += 10;
+    }
+
+    // S speeds down
+    if(e.keyCode == 83) {
+        piecesArray[i].y += 30;
+    }
+
+    // R rotates
+    if(e.keyCode == 82) {
+        piecesArray[i].rotate();
+    }
+
+});
 
     newGame();
 }
