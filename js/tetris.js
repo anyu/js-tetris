@@ -5,24 +5,64 @@ var context = canvas.getContext("2d");
 Objects
 /***************************/
 
-function tetrisPiece(x, y) {
+var tPiece = function (direction, x, y) {
     this.x = x;
     this.y = y;
-    this.height = 25;
-    this.width = 25;
-    this.image;
+    this.height = 40;
+    this.width = 60;
     this.visible = false;
+
+    tPiece.prototype.draw = function(xPos,yPos) {
+        var xPos = this.x;
+        var yPos = this.y;
+        for (var row = 0; row < T.length-1; row++) {
+            for (var column = 0; column < T.length; column++) {
+                if ((T[direction][row][column]) == 1) {
+                    context.beginPath();
+                    context.rect(xPos, yPos, 20,20);
+                    context.lineWidth = 1;
+                    context.fillStyle = '#66999B';
+                    context.strokeStyle = '#1E8C91';
+                    context.fill();
+                    context.stroke();
+                }
+                xPos += 20;
+            }
+            xPos = this.x;
+            yPos += 20;
+        }
+    }
 }
 
-function tetrisSquare (x, y, color) {
-    context.beginPath();
-    context.fillStyle = color;
-    context.fillRect(x, y, 20,20);
-    context.rect(x, y, 20,20);
-    context.lineWidth = 2;
-    context.strokeStyle = '#1E8C91';
-    context.stroke();
+var lPiece = function (direction, x, y) {
+    this.x = x;
+    this.y = y;
+    this.height = 60;
+    this.width = 20;
     this.visible = false;
+
+    lPiece.prototype.draw = function(xPos,yPos) {
+        var xPos = this.x;
+        var yPos = this.y;
+        for (var row = 0; row < L.length-1; row++) {
+            for (var column = 0; column < L.length; column++) {
+                if ((L[direction][row][column]) == 0) {
+                }
+                else if ((L[direction][row][column]) == 1) {
+                    context.beginPath();
+                    context.rect(xPos, yPos, 20,20);
+                    context.lineWidth = 1;
+                    context.fillStyle = '#F5A623';
+                    context.strokeStyle = '#D08916';
+                    context.fill();
+                    context.stroke();
+                }
+                xPos += 20;
+            }
+            xPos = this.x;
+            yPos += 20;
+        }
+    }
 }
 
 function background() {
@@ -33,28 +73,21 @@ function background() {
     context.stroke();
 }
 
-var t1 = new tetrisPiece(20, 0);
-var tImage = new Image();
-tImage.src = "shapeT.png";
-t1.image = tImage;
-
-var L1 = new tetrisPiece(150, 0);
-var LImage = new Image();
-LImage.src = "shapeL.png";
-L1.image = LImage;
+var tPiece1 = new tPiece(0,50,0);
+var lPiece1 = new lPiece(1,200,0);
 
 var piecesArray = [];
-piecesArray.push(t1);
-piecesArray.push(L1);
+piecesArray.push(tPiece1);
+piecesArray.push(lPiece1);
 
 /***************************
 Game start
 /***************************/
 
 var i = 0;
-var shapes = [I,J,L,O,S,T,Z];
-var randomShape = Math.floor(Math.random() * shapes.length);
-var randomDirection = Math.floor(Math.random() * shapes[randomShape].length);
+// var shapes = [I,J,L,O,S,T,Z];
+// var randomShape = Math.floor(Math.random() * shapes.length);
+// var randomDirection = Math.floor(Math.random() * shapes[randomShape].length);
 
 addEventListener( "keydown", function(e) {    
     if(e.keyCode == 65) {
@@ -69,22 +102,6 @@ addEventListener( "keydown", function(e) {
 
 function init() {
 
-    function generateShape(shape, direction, x, y) {
-
-        for (var row = 0; row < shape.length-1; row++) {
-            for (var column = 0; column < shape.length; column++) {
-                if ((shape[direction][row][column]) == 0) {
-                }
-                else if ((shape[direction][row][column]) == 1) {
-                    tetrisSquare(x,y, "#66999B");
-                }
-                x += 20;
-            }
-            x = 40;
-            y += 20;
-        } 
-    }
-
     var game = function() {
         draw();
     }
@@ -93,14 +110,11 @@ function init() {
         context.clearRect(0, 0, canvas.width, canvas.height);
 
         dropPiece(piecesArray[i]);
-        generateShape(shapes[randomShape], randomDirection, 40, 20);
-        // var tpiece = generateShape(shapes[randomShape], randomDirection, 40, 20);
-        // dropPiece(tpiece);
         background();
-
+        
         for (var j = 0; j < piecesArray.length; j++) {
-            if (piecesArray[j].visible) {
-                context.drawImage(piecesArray[j].image, piecesArray[j].x, piecesArray[j].y);
+            if (piecesArray[j].visible) {  
+                piecesArray[j].draw(piecesArray[j].x, piecesArray[j].y);
             }
         }
     }    
@@ -113,7 +127,6 @@ function init() {
 
     var setPiece = function(currentPiece) {
         if (currentPiece.y >= (canvas.height - currentPiece.height)) {
-            currentPiece.y = 560;
             i++;
             if (i < piecesArray.length) {
                 dropPiece(piecesArray[i]);
