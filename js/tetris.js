@@ -5,32 +5,45 @@ var context = canvas.getContext("2d");
 Objects
 /***************************/
 
-var tPiece = function (direction, x, y) {
+var i = 0;
+
+function formBrick(shape,direction,xPos,yPos,fillColor, strokeColor) {
+  
+    for (var row = 0; row < shape.length-1; row++) {
+        for (var column = 0; column < shape.length-1; column++) {
+            console.log('row is: ' + row, 'column is: ' + column, 'fill is: ' + shape[direction][row][column])
+;    
+            if ((shape[direction][row][column]) == 1) {
+                context.beginPath();
+                context.rect(xPos, yPos, 20,20);
+                context.lineWidth = 1;
+                context.fillStyle = fillColor;
+                context.strokeStyle = strokeColor;
+                context.fill();
+                context.stroke();
+                        }
+            xPos += 20;
+        }
+        xPos = this.x;
+        yPos += 20;
+    }
+}
+
+var tPiece = function (x, y) {
     this.x = x;
     this.y = y;
     this.height = 40;
     this.width = 60;
     this.visible = false;
 
-    tPiece.prototype.draw = function(xPos,yPos) {
-        var xPos = this.x;
-        var yPos = this.y;
-        for (var row = 0; row < T.length-1; row++) {
-            for (var column = 0; column < T.length; column++) {
-                if ((T[direction][row][column]) == 1) {
-                    context.beginPath();
-                    context.rect(xPos, yPos, 20,20);
-                    context.lineWidth = 1;
-                    context.fillStyle = '#66999B';
-                    context.strokeStyle = '#1E8C91';
-                    context.fill();
-                    context.stroke();
-                }
-                xPos += 20;
-            }
-            xPos = this.x;
-            yPos += 20;
-        }
+    tPiece.prototype.draw = function() {
+        formBrick(T, 0, this.x, this.y, '#66999B', '#1E8C91');
+
+        formBrick(T, 0, this.x, this.y, '#66999B', '#1E8C91');
+
+        formBrick(T, 0, this.x, this.y, '#66999B', '#1E8C91');
+
+        formBrick(T, 0, this.x, this.y, '#66999B', '#1E8C91');
     }
 }
 
@@ -73,7 +86,7 @@ function background() {
     context.stroke();
 }
 
-var tPiece1 = new tPiece(0,50,0);
+var tPiece1 = new tPiece(50,0);
 var lPiece1 = new lPiece(1,200,0);
 
 var piecesArray = [];
@@ -84,8 +97,7 @@ piecesArray.push(lPiece1);
 Game start
 /***************************/
 
-var i = 0;
-// var shapes = [I,J,L,O,S,T,Z];
+
 // var randomShape = Math.floor(Math.random() * shapes.length);
 // var randomDirection = Math.floor(Math.random() * shapes[randomShape].length);
 
