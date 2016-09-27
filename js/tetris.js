@@ -6,37 +6,31 @@ Objects
 /***************************/
 
 var i = 0;
+var shapes = [I,J,L,O,S,T,Z];
 
-var tPiece = function (x, y) {
+var tetrisPiece = function (x, y, fillColor) {
     this.x = x;
     this.y = y;
     this.height = 40;
-    this.width = 60;
+    this.width = 100;
     this.visible = false;
+    this.shape = shapes[randomShape()];
 
-    tPiece.prototype.draw = function(xPos, yPos) {
-        formBrick(T, 0, xPos, yPos, '#66999B', '#1E8C91');
+    tetrisPiece.prototype.draw = function(xPos, yPos) {
+        formBrick(this.shape, 0, xPos, yPos, '#66999B', '#1E8C91');
     }
 }
 
-var lPiece = function (x, y) {
-    this.x = x;
-    this.y = y;
-    this.height = 40;
-    this.width = 20;
-    this.visible = false;
-
-    lPiece.prototype.draw = function(xPos,yPos) {
-        formBrick(L, 0, xPos, yPos, '#F5A623', '#D08916');
-    }
-}
+function randomShape() {
+    var result = Math.floor(Math.random() * shapes.length);
+    return result;
+} 
 
 function formBrick(shape,direction,xPos,yPos,fillColor, strokeColor) {
     var xPosOrig = xPos;
     var yPosOrig = yPos;
     for (var row = 0; row < shape.length-1; row++) {
-        for (var column = 0; column < shape.length-1; column++) {
-;    
+        for (var column = 0; column < shape.length-1; column++) { 
             if ((shape[direction][row][column]) == 1) {
                 context.beginPath();
                 context.rect(xPos, yPos, 20,20);
@@ -45,7 +39,7 @@ function formBrick(shape,direction,xPos,yPos,fillColor, strokeColor) {
                 context.strokeStyle = strokeColor;
                 context.fill();
                 context.stroke();
-                        }
+            }
             xPos += 20;
         }
         xPos = xPosOrig;
@@ -61,20 +55,18 @@ function background() {
     context.stroke();
 }
 
-var tPiece1 = new tPiece(50,0);
-var lPiece1 = new lPiece(200,0);
+var tetrisPiece1 = new tetrisPiece(50,0);
+var tetrisPiece2 = new tetrisPiece(200,0);
 
 var piecesArray = [];
-piecesArray.push(tPiece1);
-piecesArray.push(lPiece1);
+piecesArray.push(tetrisPiece1);
+piecesArray.push(tetrisPiece2);
 
 /***************************
 Game start
 /***************************/
 
 
-// var randomShape = Math.floor(Math.random() * shapes.length);
-// var randomDirection = Math.floor(Math.random() * shapes[randomShape].length);
 
 addEventListener( "keydown", function(e) {    
     if(e.keyCode == 65) {
