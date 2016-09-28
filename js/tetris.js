@@ -25,6 +25,7 @@ var tetrisPiece = function (x, y, fillColor, strokeColor) {
         formBrick(this.shape, this.direction, this.x, this.y, this.fillColor, this.strokeColor);
     }
     
+    // Loop through possible directions
     tetrisPiece.prototype.rotate = function() {
         if (this.direction+1 > 3) {
             this.direction = 0;
@@ -33,7 +34,6 @@ var tetrisPiece = function (x, y, fillColor, strokeColor) {
             this.direction += 1;
         }
     }
-
 }
 
 function randomShape() {
@@ -69,7 +69,7 @@ function formBrick(shape,direction,xPos,yPos,fillColor, strokeColor) {
 
 function background() {
     context.beginPath();
-    context.rect(0, 0, 400, 600);
+    context.rect(0, 0, blockSize*15, blockSize*20);
     context.lineWidth = 3;
     context.strokeStyle = '#dddddd';
     context.stroke();
@@ -130,7 +130,6 @@ function init() {
         if (piecesArray[i].y) {
             alert("I'm occupied");
         }
-
     }
 
     function endGame() {
@@ -145,17 +144,17 @@ function init() {
 
     // A moves left
     if(e.keyCode == 65 && piecesArray[i].x > 5) {
-        piecesArray[i].x -= 10;
+        piecesArray[i].x -= blockSize;
     }
 
     // D moves right
     if(e.keyCode == 68 && piecesArray[i].x < 300) {
-        piecesArray[i].x += 10;
+        piecesArray[i].x += blockSize;
     }
 
     // S speeds down
     if(e.keyCode == 83) {
-        piecesArray[i].y += 30;
+        piecesArray[i].y += blockSize*2;
     }
 
     // R rotates
