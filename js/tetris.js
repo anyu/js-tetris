@@ -9,7 +9,6 @@ CURRENT BUGS:
 
 /***************************
 NEXT:
-
 - Make pieces stop on collision
 - Once a row is filled, make it disappear
 - End game when top is reached
@@ -27,8 +26,8 @@ var BLOCK_SIZE = 30;
 var GRIDWIDTH = BLOCK_SIZE * 13;
 var GRIDHEIGHT = BLOCK_SIZE * 20;
 
-// var shapes = [I,J,L,O,S,T,Z];
-var shapes = [I,J,L,S,T,Z];
+var shapes = [I,J,L,O,S,T,Z];
+// var shapes = [I,J,L,S,T,Z];
 var i = 0;
 
 
@@ -39,6 +38,8 @@ var tetrisPiece = function (x, y, fillColor, strokeColor) {
     this.width = BLOCK_SIZE *2;
     this.shape = shapes[randomShape()];
     this.direction = randomDirection();
+    // this.shape = O;
+    // this.direction = 0;
     this.fillColor = fillColor;
     this.strokeColor = strokeColor;
     this.visible = false;
@@ -97,9 +98,21 @@ function formBrick(shape,direction,xPos,yPos,fillColor, strokeColor) {
     var yPosOrig = yPos;
     var leftColZeroes = 0;
 
-    for (var column = 0; column < shape.length-1; column++) {
-        for (var row = 0; row < shape.length-1; row++) { 
-            
+    // console.log("NEW ---------------------------------")
+    // console.log("shape: " + shape);
+    // console.log("direction: " + direction);
+    // for (var column = 0; column < shape.length-1; column++) {
+    //     for (var row = 0; row < shape.length-1; row++) { 
+    for (var column = 0; column < 4; column++) {
+        for (var row = 0; row < 4; row++) { 
+    // for (var column = 0; column < shape[direction][column].length; column++) {
+    //     for (var row = 0; row < shape[direction][row].length; row++) { 
+            // console.log("shape[dir][col]: " + shape[direction][column]);
+            // console.log("shape[dir][col]length: " + shape[direction][column].length);
+
+            // console.log("shape[dir][row]: " + shape[direction][row]);
+            // console.log("shape[dir][row]length: " + shape[direction][row].length);
+
             // Leftside boundary
             if (xPos <= 0) {
                 xPos = 0;
