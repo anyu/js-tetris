@@ -1,11 +1,9 @@
 /***************************
-CURRENT BUGS:
-1) O shape not working 
-2) I shape only has 3 squares
-3) Right bound not set
-4) Left bound hit too soon for pieces that don't have a left column
-5) Once left bound is reached, piece can't move right anymore
-6) Bottom bound not complete
+CURRENT BUGS: 
+1) Right bound not set
+2) Left bound hit too soon for pieces that don't have a left column
+3) Once left bound is reached, piece can't move right anymore
+4) Bottom bound not complete
 
 /***************************
 NEXT:
@@ -98,20 +96,8 @@ function formBrick(shape,direction,xPos,yPos,fillColor, strokeColor) {
     var yPosOrig = yPos;
     var leftColZeroes = 0;
 
-    // console.log("NEW ---------------------------------")
-    // console.log("shape: " + shape);
-    // console.log("direction: " + direction);
-    // for (var column = 0; column < shape.length-1; column++) {
-    //     for (var row = 0; row < shape.length-1; row++) { 
-    for (var column = 0; column < 4; column++) {
-        for (var row = 0; row < 4; row++) { 
-    // for (var column = 0; column < shape[direction][column].length; column++) {
-    //     for (var row = 0; row < shape[direction][row].length; row++) { 
-            // console.log("shape[dir][col]: " + shape[direction][column]);
-            // console.log("shape[dir][col]length: " + shape[direction][column].length);
-
-            // console.log("shape[dir][row]: " + shape[direction][row]);
-            // console.log("shape[dir][row]length: " + shape[direction][row].length);
+    for (var column = 0; column < shape[direction].length; column++) {
+        for (var row = 0; row < shape[direction].length; row++) { 
 
             // Leftside boundary
             if (xPos <= 0) {
