@@ -24,16 +24,18 @@ var GRIDHEIGHT = BLOCK_SIZE * 20;
 
 var shapes = [I,J,L,O,S,T,Z];
 var i = 0;
+// var hitLeftEdge = false;
+// var hitRightEdge = false;
 
 
 var tetrisPiece = function (x, y, fillColor, strokeColor) {
-    this.x = 0;
+    this.x = x;
     this.y = y;
     this.height = BLOCK_SIZE *3;
     this.width = BLOCK_SIZE *2;
     this.shape = shapes[randomShape()];
     this.direction = randomDirection();
-    // this.shape = L;
+    // this.shape = S;
     // this.direction = 1;
     this.fillColor = fillColor;
     this.strokeColor = strokeColor;
@@ -90,15 +92,18 @@ function randNumberWithMultiple(min, max, multiple) {
 function formBrick(shape,direction,xPos,yPos,fillColor, strokeColor) {
     var xPosOrig = xPos;
     var yPosOrig = yPos;
-    // var rightAgainstEdge = 0;
 
     for (var column = 0; column < shape[direction].length; column++) {
         for (var row = 0; row < shape[direction].length; row++) { 
 
             if ((shape[direction][row][column]) == 1) {
                 if (xPos <= 0) {
+                    hitLeftEdge = true;
                     xPos = 0;
                 }
+                // else if (xPos + BLOCK_SIZE >= GRIDWIDTH) {
+                //     hitRightEdge = true;
+                // }
                 context.beginPath();
                 context.rect(xPos, yPos, BLOCK_SIZE, BLOCK_SIZE);
                 context.lineWidth = 1;
@@ -187,13 +192,14 @@ function init() {
     addEventListener( "keydown", function(e) {    
 
     // A moves left
-    if(e.keyCode == 65) {
+    if(e.keyCode == 65 && !hitLeftEdge) {
         piecesArray[i].x -= BLOCK_SIZE;
     }
 
     // D moves right
     if(e.keyCode == 68) {
         piecesArray[i].x += BLOCK_SIZE;
+        hitLeftEdge = false;
     }
 
     // S speeds down
