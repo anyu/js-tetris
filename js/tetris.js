@@ -1,9 +1,7 @@
 /***************************
 CURRENT BUGS: 
 1) Right bound not set
-2) Left bound hit too soon for pieces that don't have a left column
-3) Once left bound is reached, piece can't move right anymore
-4) Bottom bound not complete
+2) Bottom bound not complete
 
 /***************************
 NEXT:
@@ -25,19 +23,18 @@ var GRIDWIDTH = BLOCK_SIZE * 13;
 var GRIDHEIGHT = BLOCK_SIZE * 20;
 
 var shapes = [I,J,L,O,S,T,Z];
-// var shapes = [I,J,L,S,T,Z];
 var i = 0;
 
 
 var tetrisPiece = function (x, y, fillColor, strokeColor) {
-    this.x = x;
+    this.x = 0;
     this.y = y;
     this.height = BLOCK_SIZE *3;
     this.width = BLOCK_SIZE *2;
     this.shape = shapes[randomShape()];
     this.direction = randomDirection();
-    // this.shape = O;
-    // this.direction = 0;
+    // this.shape = L;
+    // this.direction = 1;
     this.fillColor = fillColor;
     this.strokeColor = strokeColor;
     this.visible = false;
@@ -85,7 +82,6 @@ function randomDirection() {
     return result;
 } 
 
-
 function randNumberWithMultiple(min, max, multiple) {
     var result = Math.floor(Math.random() * ((max - min) / multiple)) * BLOCK_SIZE + min;
     return result;
@@ -94,17 +90,15 @@ function randNumberWithMultiple(min, max, multiple) {
 function formBrick(shape,direction,xPos,yPos,fillColor, strokeColor) {
     var xPosOrig = xPos;
     var yPosOrig = yPos;
-    var leftColZeroes = 0;
+    // var rightAgainstEdge = 0;
 
     for (var column = 0; column < shape[direction].length; column++) {
         for (var row = 0; row < shape[direction].length; row++) { 
 
-            // Leftside boundary
-            if (xPos <= 0) {
-                xPos = 0;
-            }
-
-            if ((shape[direction][column][row]) == 1) {
+            if ((shape[direction][row][column]) == 1) {
+                if (xPos <= 0) {
+                    xPos = 0;
+                }
                 context.beginPath();
                 context.rect(xPos, yPos, BLOCK_SIZE, BLOCK_SIZE);
                 context.lineWidth = 1;
@@ -113,11 +107,13 @@ function formBrick(shape,direction,xPos,yPos,fillColor, strokeColor) {
                 context.fill();
                 context.stroke();
             }
-            xPos += BLOCK_SIZE;
+            yPos += BLOCK_SIZE;
         }
-        xPos = xPosOrig;
-        yPos += BLOCK_SIZE;
+
+        yPos = yPosOrig;
+        xPos += BLOCK_SIZE;
     }
+
 }
 
 // function occupied(x,y) {
@@ -191,12 +187,12 @@ function init() {
     addEventListener( "keydown", function(e) {    
 
     // A moves left
-    if(e.keyCode == 65 && piecesArray[i].x) {
+    if(e.keyCode == 65) {
         piecesArray[i].x -= BLOCK_SIZE;
     }
 
     // D moves right
-    if(e.keyCode == 68 && piecesArray[i].x) {
+    if(e.keyCode == 68) {
         piecesArray[i].x += BLOCK_SIZE;
     }
 
