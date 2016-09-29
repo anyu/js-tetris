@@ -1,3 +1,21 @@
+/***************************
+CURRENT BUGS:
+1) O shape not working 
+2) I shape only has 3 squares
+3) Right bound not set
+4) Left bound hit too soon for pieces that don't have a left column
+5) Once left bound is reached, piece can't move right anymore
+6) Bottom bound not complete
+
+/***************************
+NEXT:
+
+- Make pieces stop on collision
+- Once a row is filled, make it disappear
+- End game when top is reached
+
+/***************************/
+
 var canvas = document.getElementById("grid");
 var context = canvas.getContext("2d");
 
@@ -9,7 +27,6 @@ var BLOCK_SIZE = 30;
 var GRIDWIDTH = BLOCK_SIZE * 13;
 var GRIDHEIGHT = BLOCK_SIZE * 20;
 
-// O shape not working yet; I shape doesn't have 4 squares
 // var shapes = [I,J,L,O,S,T,Z];
 var shapes = [I,J,L,S,T,Z];
 var i = 0;
