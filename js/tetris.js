@@ -25,6 +25,8 @@ var GRIDWIDTH = BLOCK_SIZE * 13;
 var GRIDHEIGHT = BLOCK_SIZE * 20;
 
 var shapes = [I,J,L,O,S,T,Z];
+var landed = new Array (GRIDHEIGHT).fill(new Array(GRIDWIDTH).fill('0'));
+
 var i = 0;
 // var hitLeftEdge = false;
 // var hitRightEdge = false;
@@ -95,10 +97,10 @@ function formBrick(shape,direction,xPos,yPos,fillColor, strokeColor) {
     var xPosOrig = xPos;
     var yPosOrig = yPos;
 
-    for (var column = 0; column < shape[direction].length; column++) {
+    for (var col = 0; col < shape[direction].length; col++) {
         for (var row = 0; row < shape[direction].length; row++) { 
 
-            if ((shape[direction][row][column]) == 1) {
+            if ((shape[direction][row][col]) == 1) {
                 if (xPos <= 0) {
                     // hitLeftEdge = true;
                     xPos = 0;
@@ -165,8 +167,19 @@ function init() {
     }
 
     var setPiece = function(currentPiece) {
-        if (currentPiece.y >= (canvas.height - currentPiece.height)) {
+        if (currentPiece.y >= (canvas.height - currentPiece.height)) { 
+            // landed[currentPiece.x][currentPiece.y]
             i++;
+
+            for (var col = 0; col < currentPiece.shape[currentPiece.direction].length; col++) {
+                for (var row = 0; row < currentPiece.shape[currentPiece.direction].length; row++) { 
+                    if(currentPiece.shape[currentPiece.direction][col][row] != 0) {
+                        landed[row + currentPiece.x][col + currentPiece.x] = 1;
+                        // console.log(landed[0][30]);
+                    }
+                }
+            }
+
             if (i < piecesArray.length) {
                 dropPiece(piecesArray[i]);
             }
@@ -174,12 +187,6 @@ function init() {
                 endGame();
             }
 
-        }
-    }
-
-    function checkIfOccupied() {
-        if (piecesArray[i].y) {
-            alert("I'm occupied");
         }
     }
 
