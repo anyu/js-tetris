@@ -1,7 +1,9 @@
 /***************************
 CURRENT BUGS: 
-1) Right bound not set
-2) Bottom bound not complete
+1) O shape doesn't show in certain directions - length undefined error
+2) Left bound keeps going invisibly offscreen - affects moving right 
+3) Right bound not set
+4) Bottom bound not complete
 
 /***************************
 NEXT:
@@ -98,7 +100,7 @@ function formBrick(shape,direction,xPos,yPos,fillColor, strokeColor) {
 
             if ((shape[direction][row][column]) == 1) {
                 if (xPos <= 0) {
-                    hitLeftEdge = true;
+                    // hitLeftEdge = true;
                     xPos = 0;
                 }
                 // else if (xPos + BLOCK_SIZE >= GRIDWIDTH) {
@@ -192,14 +194,15 @@ function init() {
     addEventListener( "keydown", function(e) {    
 
     // A moves left
-    if(e.keyCode == 65 && !hitLeftEdge) {
+    // if(e.keyCode == 65 && !hitLeftEdge) {
+    if(e.keyCode == 65) {
         piecesArray[i].x -= BLOCK_SIZE;
     }
 
     // D moves right
     if(e.keyCode == 68) {
         piecesArray[i].x += BLOCK_SIZE;
-        hitLeftEdge = false;
+        // hitLeftEdge = false;
     }
 
     // S speeds down
