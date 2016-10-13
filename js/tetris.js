@@ -25,7 +25,45 @@ var GRIDWIDTH = BLOCK_SIZE * 13;
 var GRIDHEIGHT = BLOCK_SIZE * 20;
 
 var shapes = [I,J,L,O,S,T,Z];
-var landed = new Array (GRIDHEIGHT).fill(new Array(GRIDWIDTH).fill('0'));
+// var landed = new Array (GRIDHEIGHT).fill(new Array(GRIDWIDTH).fill('0'));
+
+/***************************
+Testing with simple case
+/***************************/
+
+var sample = [
+        [1, 2, 3, 4],
+        [5, 6, 7, 8],
+        [9, 10, 11, 12],
+        [13, 14, 15, 16],
+];
+
+var landed = [
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [1, 1, 0, 0],
+        [1, 1, 0, 0],
+];
+
+var active = [
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [1, 1, 0, 0],
+        [1, 1, 0, 0],
+        [0, 0, 0, 0],
+];
+
+for (var row = 0; row < landed[0].length; row++) {
+    for (var col = 0; col < landed[0].length; col++) {
+        if (landed[row][col] == active[row][col]) {
+            console.log("MAYDAY");
+        }
+    }
+}
+
 
 var i = 0;
 // var hitLeftEdge = false;
@@ -33,14 +71,14 @@ var i = 0;
 
 
 var tetrisPiece = function (x, y, fillColor, strokeColor) {
-    this.x = x;
+    this.x = 0;
     this.y = y;
     this.height = BLOCK_SIZE *3;
     this.width = BLOCK_SIZE *2;
-    this.shape = shapes[randomShape()];
-    this.direction = randomDirection();
-    // this.shape = S;
-    // this.direction = 1;
+    // this.shape = shapes[randomShape()];
+    // this.direction = randomDirection();
+    this.shape = O;
+    this.direction = 0;
     this.fillColor = fillColor;
     this.strokeColor = strokeColor;
     this.visible = false;
@@ -91,6 +129,19 @@ function randomDirection() {
 function randNumberWithMultiple(min, max, multiple) {
     var result = Math.floor(Math.random() * ((max - min) / multiple)) * BLOCK_SIZE + min;
     return result;
+}
+
+detectCollision(landed, active);
+
+function detectCollision(matrix1, matrix2) {
+
+    for (var row = 0; row < matrix1[0].length; row++) {
+        for (var col = 0; col < matrix1[0].length; col++) {
+            if (matrix1[row][col] == matrix2[row][col]) {
+                console.log("SAME");
+            }
+        }
+    }
 }
 
 function formBrick(shape,direction,xPos,yPos,fillColor, strokeColor) {
@@ -171,14 +222,6 @@ function init() {
             // landed[currentPiece.x][currentPiece.y]
             i++;
 
-            for (var col = 0; col < currentPiece.shape[currentPiece.direction].length; col++) {
-                for (var row = 0; row < currentPiece.shape[currentPiece.direction].length; row++) { 
-                    if(currentPiece.shape[currentPiece.direction][col][row] != 0) {
-                        landed[row + currentPiece.x][col + currentPiece.x] = 1;
-                        // console.log(landed[0][30]);
-                    }
-                }
-            }
 
             if (i < piecesArray.length) {
                 dropPiece(piecesArray[i]);
