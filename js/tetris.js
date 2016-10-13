@@ -56,23 +56,27 @@ var active = [
         [0, 0, 0, 0],
 ];
 
-for (var row = 0; row < landed[0].length; row++) {
-    for (var col = 0; col < landed[0].length; col++) {
-        if (landed[row][col] == active[row][col]) {
-            console.log("MAYDAY");
-        }
-    }
-}
+// for (var row = 0; row < landed[0].length; row++) {
+//     for (var col = 0; col < landed[0].length; col++) {
+//         if (landed[row][col] == active[row][col]) {
+//             console.log("MAYDAY");
+//         }
+//     }
+// }
 
+// keep track of where in grid array we
+var posGridRow = 0;
+var posGridCol = 0;
 
 var i = 0;
 // var hitLeftEdge = false;
 // var hitRightEdge = false;
 
 
-var tetrisPiece = function (x, y, fillColor, strokeColor) {
-    this.x = 0;
-    this.y = y;
+var tetrisPiece = function (gridRow, gridCol, fillColor, strokeColor) {
+
+    this.posGridRow = 0;
+    this.posGridCol = gridCol;
     this.height = BLOCK_SIZE *3;
     this.width = BLOCK_SIZE *2;
     // this.shape = shapes[randomShape()];
@@ -84,7 +88,8 @@ var tetrisPiece = function (x, y, fillColor, strokeColor) {
     this.visible = false;
 
     tetrisPiece.prototype.draw = function() {
-        formBrick(this.shape, this.direction, this.x, this.y, this.fillColor, this.strokeColor);
+        formBrick(this.shape, this.direction, this.posGridRow, this.posGridCol);
+        drawBrick(this.fillColor, this.strokeColor);
     }
     
     // Loop through possible directions
@@ -144,40 +149,49 @@ function detectCollision(matrix1, matrix2) {
     }
 }
 
-function formBrick(shape,direction,xPos,yPos,fillColor, strokeColor) {
-    var xPosOrig = xPos;
-    var yPosOrig = yPos;
+function formBrick(shape,direction, gridRow, gridCol) {
+    var gridRowOrig = gridRow;
+    var gridColOrig = gridCol;
 
     for (var col = 0; col < shape[direction].length; col++) {
         for (var row = 0; row < shape[direction].length; row++) { 
-
+                console.log("shape[direction].length: " + shape[direction].length);
+                console.log("shape[direction][row][col]: " + shape[direction][row][col]);
+               
             if ((shape[direction][row][col]) == 1) {
-                if (xPos <= 0) {
-                    // hitLeftEdge = true;
-                    xPos = 0;
-                }
-                // else if (xPos + BLOCK_SIZE >= GRIDWIDTH) {
-                //     hitRightEdge = true;
+                // if (gridRow <= 0) {
+                //     gridRow = 0;
                 // }
+
+            active[posGridRow][posGridCol] = 1;
+                //else place 0? or unnecessary
+                posGridCol++;
+            }
+            gridCol += BLOCK_SIZE;
+        }
+
+        gridCol = gridColOrig;
+        gridRow += BLOCK_SIZE;
+    }
+
+}
+
+function drawBrick(fillColor, strokeColor) {
+
+    for (var row = 0; row < active[0].length; row++) {
+        for (var col = 0; col < active[0].length; col++) {
+            if (active[posGridRow][posGridCol] == 1) {
                 context.beginPath();
-                context.rect(xPos, yPos, BLOCK_SIZE, BLOCK_SIZE);
+                context.rect(posGridRow+BLOCK_SIZE,posGridCol+BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
                 context.lineWidth = 1;
                 context.fillStyle = fillColor;
                 context.strokeStyle = strokeColor;
                 context.fill();
                 context.stroke();
-            }
-            yPos += BLOCK_SIZE;
+            }    
         }
-
-        yPos = yPosOrig;
-        xPos += BLOCK_SIZE;
     }
-
 }
-
-// function occupied(x,y) {
-// }
 
 var tetrisPiece1 = new tetrisPiece(randNumberWithMultiple(0, GRIDWIDTH, BLOCK_SIZE),0,'#66999B','#1E8C91');
 var tetrisPiece2 = new tetrisPiece(randNumberWithMultiple(0, GRIDWIDTH, BLOCK_SIZE),0,'#F5A623','#D08916');
@@ -206,19 +220,19 @@ function init() {
         
         for (var j = 0; j < piecesArray.length; j++) {
             if (piecesArray[j].visible) {  
-                piecesArray[j].draw(piecesArray[j].x, piecesArray[j].y);
+                piecesArray[j].draw(piecesArray[j].posGridRow, piecesArray[j].posGridCol);
             }
         }
     }    
 
     var dropPiece = function(piece) {
         piece.visible = true;
-        piece.y += 1;
+        piece.posGridCol += 1;
         setPiece(piece);
     }
 
     var setPiece = function(currentPiece) {
-        if (currentPiece.y >= (canvas.height - currentPiece.height)) { 
+        if (currentPiece.posGridCol >= (canvas.height - currentPiece.height)) { 
             // landed[currentPiece.x][currentPiece.y]
             i++;
 
@@ -246,18 +260,18 @@ function init() {
     // A moves left
     // if(e.keyCode == 65 && !hitLeftEdge) {
     if(e.keyCode == 65) {
-        piecesArray[i].x -= BLOCK_SIZE;
+        piecesArray[i].posGridRow -= BLOCK_SIZE;
     }
 
     // D moves right
     if(e.keyCode == 68) {
-        piecesArray[i].x += BLOCK_SIZE;
+        piecesArray[i].posGridRow += BLOCK_SIZE;
         // hitLeftEdge = false;
     }
 
     // S speeds down
     if(e.keyCode == 83) {
-        piecesArray[i].y += BLOCK_SIZE*2;
+        piecesArray[i].posGridCol += BLOCK_SIZE*2;
     }
 
     // R rotates
