@@ -25,14 +25,14 @@ var BLOCK_SIZE = 30;
 var NUM_ROWS = 20;
 var NUM_COLS = 10;
 
-var GRIDWIDTH = BLOCK_SIZE * 13;
+// not sure if necessary anymore
+var GRIDWIDTH = BLOCK_SIZE * 10;
 var GRIDHEIGHT = BLOCK_SIZE * 20;
 
 var shapes = [I,J,L,O,S,T,Z];
 
 
 // create empty active matrix
-
 var active = [];
 
 for (var i = 0; i< NUM_ROWS;i ++) {
@@ -42,38 +42,38 @@ for (var i = 0; i< NUM_ROWS;i ++) {
     }
 }
 
+var landed = active.map(function(array) {
+    return array.slice();
+});
+
+var collision = false;
+
+
 /***************************
 Testing with simple case
 /***************************/
 
-var sample = [
-        [1, 2, 3, 4],
-        [5, 6, 7, 8],
-        [9, 10, 11, 12],
-        [13, 14, 15, 16],
-];
-
-
-// var landed = [
-//         [0, 0, 0, 0],
-//         [0, 0, 0, 0],
-//         [0, 0, 0, 0],
-//         [0, 0, 0, 0],
-//         [1, 1, 0, 0],
-//         [1, 1, 0, 0],
+// var sample = [
+//         [1, 2, 3, 4],
+//         [5, 6, 7, 8],
+//         [9, 10, 11, 12],
+//         [13, 14, 15, 16],
 // ];
 
-var i = 0;
+
+var count = 0;
 
 var tetrisPiece = function (gridRow, gridCol, fillColor, strokeColor) {
 
     this.posGridCol = 0;
     this.posGridRow = 0;
-    this.height = BLOCK_SIZE *3;
-    this.width = BLOCK_SIZE *2;
+    // this.height = BLOCK_SIZE *3;
+    // this.width = BLOCK_SIZE *2;
+    this.height = 4;
+    this.width = 4;
     // this.shape = shapes[randomShape()];
     // this.direction = randomDirection();
-    this.shape = O;
+    this.shape = T;
     this.direction = 0;
     this.fillColor = fillColor;
     this.strokeColor = strokeColor;
@@ -81,12 +81,12 @@ var tetrisPiece = function (gridRow, gridCol, fillColor, strokeColor) {
 
     tetrisPiece.prototype.draw = function() {
         formBrick(this.shape, this.direction, this.posGridRow, this.posGridCol);
-        drawBrick(this.fillColor, this.strokeColor, this.posGridRow, this.posGridCol);
+        drawBrick(this.fillColor, this.strokeColor);
     }
     
     // Loop through possible directions
     tetrisPiece.prototype.rotate = function() {
-        if (this.direction+1 > 3) {
+        if (this.direction + 1 > 3) {
             this.direction = 0;
         }
         else {
@@ -128,15 +128,19 @@ function randNumberWithMultiple(min, max, multiple) {
     return result;
 }
 
-// detectCollision(landed, active);
-
 function detectCollision(matrix1, matrix2) {
-
-    for (var row = 0; row < matrix1[0].length; row++) {
+    for (var row = 0; row < matrix1.length; row++) {
         for (var col = 0; col < matrix1[0].length; col++) {
-            if (matrix1[row][col] == matrix2[row][col]) {
-                // console.log("SAME");
+            if ((matrix1[row][col] == 1) && (matrix2[row][col] == 1)) {
+                collision = true;
+                break;
             }
+            else {
+                continue;
+            }
+            // if (matrix1 === matrix2) {
+            //     alert("same");
+            // }
         }
     }
 }
@@ -148,8 +152,14 @@ function formBrick(shape, direction, gridRow, gridCol) {
     for (var col = 0; col < shape[direction].length; col++) {
         for (var row = 0; row < shape[direction].length; row++) { 
 
-            if ((shape[direction][row][col]) == 1) {
-                active[gridRow][gridCol] = 1;
+            if ((shape[direction][row][col]) == 1 ) {
+                // if (!collision) {
+                    active[gridRow][gridCol] = 1;
+                    // landed[gridRow][gridCol] = 1;
+                // }
+                // else {
+                //     return;
+                // }
             }
             gridCol++;
         }
@@ -161,13 +171,15 @@ function formBrick(shape, direction, gridRow, gridCol) {
 }
 
 function drawBrick(fillColor, strokeColor) {
-
-console.log("active: " + active);
-
     for (var row = 0; row < active.length; row++) {
         for (var col = 0; col < active[0].length; col++) {
 
+            console.log("landed: " + landed);
+            console.log("active: " + active);
+            detectCollision(landed, active);
+
             if (active[row][col] == 1) {
+            // if (active[row][col] == 1 && !collision) {
                 context.beginPath();
                 context.rect(col*BLOCK_SIZE, row*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
                 context.lineWidth = 1;
@@ -175,19 +187,20 @@ console.log("active: " + active);
                 context.strokeStyle = strokeColor;
                 context.fill();
                 context.stroke();
-            }   
+            // }   
+            }
         }
     }
 
 }
 
 var tetrisPiece1 = new tetrisPiece(randNumberWithMultiple(0, GRIDWIDTH, BLOCK_SIZE),0,'#66999B','#1E8C91');
-// var tetrisPiece2 = new tetrisPiece(randNumberWithMultiple(0, GRIDWIDTH, BLOCK_SIZE),0,'#F5A623','#D08916');
+var tetrisPiece2 = new tetrisPiece(randNumberWithMultiple(0, GRIDWIDTH, BLOCK_SIZE),0,'#F5A623','#D08916');
 // var tetrisPiece3 = new tetrisPiece(randNumberWithMultiple(0, GRIDWIDTH, BLOCK_SIZE),0,'#FA4E4E','#DD4646');
 
 var piecesArray = [];
 piecesArray.push(tetrisPiece1);
-// piecesArray.push(tetrisPiece2);
+piecesArray.push(tetrisPiece2);
 // piecesArray.push(tetrisPiece3);
 
 /***************************
@@ -195,7 +208,6 @@ Game start
 /***************************/
 
 function init() {
-    // console.log("before active: " + active);
 
     var game = function() {
         draw();
@@ -204,12 +216,12 @@ function init() {
     var draw = function() {        
         context.clearRect(0, 0, canvas.width, canvas.height);
 
-        dropPiece(piecesArray[i]);
+        dropPiece(piecesArray[count]);
         drawBackground();
         
         for (var j = 0; j < piecesArray.length; j++) {
             if (piecesArray[j].visible) {  
-                piecesArray[j].draw(piecesArray[j].posGridCol, piecesArray[j].posGridRow);
+                piecesArray[j].draw(piecesArray[j].posGridRow, piecesArray[j].posGridCol);
             }
         }
 
@@ -217,17 +229,31 @@ function init() {
 
     var dropPiece = function(piece) {
         piece.visible = true;
-        // piece.posGridRow += 1;
+        piece.posGridRow++; 
+
+        // inelegant way of wiping active array. Jerky movements.
+        for (var i = 0; i < NUM_ROWS; i ++) {
+            for (var j = 0; j < NUM_COLS; j++) {
+                active[i][j] = 0;
+            }
+        }
         setPiece(piece);
     }
 
     var setPiece = function(currentPiece) {
-        if (currentPiece.posGridRow >= (canvas.height - currentPiece.height)) { 
-            i++;
 
+        // if (currentPiece.posGridRow >= (canvas.height - currentPiece.height)) { 
+        // console.log("currentPiece posGridRow: " + currentPiece.posGridRow);
+        console.log("active: " + active);
 
-            if (i < piecesArray.length) {
-                dropPiece(piecesArray[i]);
+        if (currentPiece.posGridRow >= (NUM_ROWS - currentPiece.height)) { 
+            count++;
+            // BUG: only 1 square is inserted
+            landed[currentPiece.posGridRow][currentPiece.posGridCol] = 1;
+            console.log("landed: " + landed);
+
+            if (count < piecesArray.length) {
+                dropPiece(piecesArray[count]);
             }
             else {
                 endGame();
@@ -241,7 +267,7 @@ function init() {
     };
 
     function newGame() {
-        gameLoop = setInterval(game, 1);            
+        gameLoop = setInterval(game, 350);            
     }
 
     addEventListener( "keydown", function(e) {    
@@ -249,23 +275,23 @@ function init() {
     // A moves left
     // if(e.keyCode == 65 && !hitLeftEdge) {
     if(e.keyCode == 65) {
-        piecesArray[i].posGridCol -= BLOCK_SIZE;
+        piecesArray[count].posGridCol -= 1;
     }
 
     // D moves right
     if(e.keyCode == 68) {
-        piecesArray[i].posGridCol += BLOCK_SIZE;
+        piecesArray[count].posGridCol++;
         // hitLeftEdge = false;
     }
 
     // S speeds down
     if(e.keyCode == 83) {
-        piecesArray[i].posGridRow += BLOCK_SIZE*2;
+        piecesArray[count].posGridRow++;
     }
 
     // R rotates
     if(e.keyCode == 82) {
-        piecesArray[i].rotate();
+        piecesArray[count].rotate();
     }
 
 });
