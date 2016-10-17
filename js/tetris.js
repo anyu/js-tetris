@@ -21,12 +21,26 @@ Objects
 /***************************/
 
 var BLOCK_SIZE = 30;
+
+var NUM_ROWS = 20;
+var NUM_COLS = 10;
+
 var GRIDWIDTH = BLOCK_SIZE * 13;
 var GRIDHEIGHT = BLOCK_SIZE * 20;
 
 var shapes = [I,J,L,O,S,T,Z];
-// var active = new Array (GRIDHEIGHT).fill(new Array(GRIDWIDTH).fill('0'));
-var active = new Array (5).fill(new Array(5).fill('0'));
+
+
+// create empty active matrix
+
+var active = [];
+
+for (var i = 0; i< NUM_ROWS;i ++) {
+    active[i] = new Array();
+    for (j = 0; j < NUM_COLS;j++) {
+        active[i][j] = 0;
+    }
+}
 
 /***************************
 Testing with simple case
@@ -39,40 +53,15 @@ var sample = [
         [13, 14, 15, 16],
 ];
 
-var test = [
-        [0, 0, 0, 0],
-        [0, 1, 1, 0],
-        [0, 1, 1, 0],
-        [0, 0, 0, 0],
-];
 
-var landed = [
-        [0, 0, 0, 0],
-        [0, 0, 0, 0],
-        [0, 0, 0, 0],
-        [0, 0, 0, 0],
-        [1, 1, 0, 0],
-        [1, 1, 0, 0],
-];
-
-// var active = [
+// var landed = [
 //         [0, 0, 0, 0],
 //         [0, 0, 0, 0],
 //         [0, 0, 0, 0],
 //         [0, 0, 0, 0],
-//         [0, 0, 0, 0],
-//         [0, 0, 0, 0],
+//         [1, 1, 0, 0],
+//         [1, 1, 0, 0],
 // ];
-// console.log(active.length);
-// console.log("landed[0][1].length: " + landed[0][1].length);
-
-// for (var row = 0; row < landed[0].length; row++) {
-//     for (var col = 0; col < landed[0].length; col++) {
-//         if (landed[row][col] == active[row][col]) {
-//             console.log("MAYDAY");
-//         }
-//     }
-// }
 
 var i = 0;
 
@@ -91,10 +80,8 @@ var tetrisPiece = function (gridRow, gridCol, fillColor, strokeColor) {
     this.visible = false;
 
     tetrisPiece.prototype.draw = function() {
-        // console.log("this.posGridCol: " + this.posGridCol);
-        // console.log("this.posGridRow: " + this.posGridRow);
-        formBrick(this.shape, this.direction, this.posGridCol, this.posGridRow);
-        drawBrick(this.fillColor, this.strokeColor, this.posGridCol, this.posGridRow);
+        formBrick(this.shape, this.direction, this.posGridRow, this.posGridCol);
+        drawBrick(this.fillColor, this.strokeColor, this.posGridRow, this.posGridCol);
     }
     
     // Loop through possible directions
@@ -141,7 +128,7 @@ function randNumberWithMultiple(min, max, multiple) {
     return result;
 }
 
-detectCollision(landed, active);
+// detectCollision(landed, active);
 
 function detectCollision(matrix1, matrix2) {
 
@@ -154,49 +141,33 @@ function detectCollision(matrix1, matrix2) {
     }
 }
 
-function formBrick(shape, direction, gridCol, gridRow) {
-    var gridColOrig = gridCol;
+function formBrick(shape, direction, gridRow, gridCol) {
     var gridRowOrig = gridRow;
+    var gridColOrig = gridCol;
 
-    // console.log("gridColBe: " + gridCol);
-    // console.log("gridRowBe: " + gridRow);
+    for (var col = 0; col < shape[direction].length; col++) {
+        for (var row = 0; row < shape[direction].length; row++) { 
 
-    // for (var col = 0; col < shape[direction].length; col++) {
-        // for (var row = 0; row < shape[direction].length; row++) { 
-    for (var col = 0; col < 4; col++) {
-        for (var row = 0; row < 4; row++) { 
-            // if ((shape[direction][row][col]) == 0) {
-            if ((test[row][col]) == 1) {
-
-                active[gridCol][gridRow] = 1;
-                // console.log("gridColAft: " + gridCol);
-                // console.log("gridRowAft: " + gridRow);
+            if ((shape[direction][row][col]) == 1) {
+                active[gridRow][gridCol] = 1;
             }
             gridCol++;
         }
 
+        // reset to first column
         gridCol = gridColOrig;
         gridRow++;
     }
-    console.log("active: " + active);
 }
 
-// function addtoArray(shape, direction, gridCol, gridRow) {
-//     for (var col = 0; col < shape[direction].length; col++) {
-//         for (var row = 0; row < shape[direction].length; row++) { 
-//             active[gridRow][gridCol] = 1;
-//         }
-//     }
-// }
-
 function drawBrick(fillColor, strokeColor) {
+
+console.log("active: " + active);
 
     for (var row = 0; row < active.length; row++) {
         for (var col = 0; col < active[0].length; col++) {
 
-            if (active[col][row] == 1) {
-                console.log("col: " + col);
-                console.log("row: " + row);
+            if (active[row][col] == 1) {
                 context.beginPath();
                 context.rect(col*BLOCK_SIZE, row*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
                 context.lineWidth = 1;
@@ -207,7 +178,6 @@ function drawBrick(fillColor, strokeColor) {
             }   
         }
     }
-    console.log("active: " + active);
 
 }
 
@@ -225,7 +195,7 @@ Game start
 /***************************/
 
 function init() {
-    console.log("before active: " + active);
+    // console.log("before active: " + active);
 
     var game = function() {
         draw();
@@ -241,7 +211,6 @@ function init() {
             if (piecesArray[j].visible) {  
                 piecesArray[j].draw(piecesArray[j].posGridCol, piecesArray[j].posGridRow);
             }
-            // piecesArray[j].posGridRow = 0;
         }
 
     }    
@@ -249,12 +218,11 @@ function init() {
     var dropPiece = function(piece) {
         piece.visible = true;
         // piece.posGridRow += 1;
-        // setPiece(piece);
+        setPiece(piece);
     }
 
     var setPiece = function(currentPiece) {
         if (currentPiece.posGridRow >= (canvas.height - currentPiece.height)) { 
-            // landed[currentPiece.x][currentPiece.y]
             i++;
 
 
