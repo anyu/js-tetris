@@ -1,4 +1,9 @@
 /***************************
+MATRIX PROBLEMS:
+- landed array isn't doing anything.
+- active array - same color and shape for all pieces.
+- rotation is weird.
+
 CURRENT BUGS: 
 1) O shape doesn't show in certain directions - length undefined error
 2) Left bound keeps going invisibly offscreen - affects moving right 
@@ -71,10 +76,10 @@ var tetrisPiece = function (gridRow, gridCol, fillColor, strokeColor) {
     // this.width = BLOCK_SIZE *2;
     this.height = 4;
     this.width = 4;
-    // this.shape = shapes[randomShape()];
-    // this.direction = randomDirection();
-    this.shape = T;
-    this.direction = 0;
+    this.shape = shapes[randomShape()];
+    this.direction = randomDirection();
+    // this.shape = T;
+    // this.direction = 0;
     this.fillColor = fillColor;
     this.strokeColor = strokeColor;
     this.visible = false;
@@ -149,13 +154,12 @@ function formBrick(shape, direction, gridRow, gridCol) {
     var gridRowOrig = gridRow;
     var gridColOrig = gridCol;
 
-    for (var col = 0; col < shape[direction].length; col++) {
+    for (var col = 0; col < shape.length; col++) {
         for (var row = 0; row < shape[direction].length; row++) { 
 
             if ((shape[direction][row][col]) == 1 ) {
                 // if (!collision) {
                     active[gridRow][gridCol] = 1;
-                    // landed[gridRow][gridCol] = 1;
                 // }
                 // else {
                 //     return;
@@ -174,8 +178,8 @@ function drawBrick(fillColor, strokeColor) {
     for (var row = 0; row < active.length; row++) {
         for (var col = 0; col < active[0].length; col++) {
 
-            console.log("landed: " + landed);
-            console.log("active: " + active);
+            // console.log("landed: " + landed);
+            // console.log("active: " + active);
             detectCollision(landed, active);
 
             if (active[row][col] == 1) {
@@ -194,14 +198,32 @@ function drawBrick(fillColor, strokeColor) {
 
 }
 
+function drawLanded(fillColor, strokeColor) {
+    for (var row = 0; row < landed.length; row++) {
+        for (var col = 0; col < landed[0].length; col++) {
+
+            if (landed[row][col] == 1) {
+                context.beginPath();
+                context.rect(col*BLOCK_SIZE, row*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+                context.lineWidth = 1;
+                context.fillStyle = fillColor;
+                context.strokeStyle = strokeColor;
+                context.fill();
+                context.stroke();
+            }
+        }
+    }
+
+}
+
 var tetrisPiece1 = new tetrisPiece(randNumberWithMultiple(0, GRIDWIDTH, BLOCK_SIZE),0,'#66999B','#1E8C91');
 var tetrisPiece2 = new tetrisPiece(randNumberWithMultiple(0, GRIDWIDTH, BLOCK_SIZE),0,'#F5A623','#D08916');
-// var tetrisPiece3 = new tetrisPiece(randNumberWithMultiple(0, GRIDWIDTH, BLOCK_SIZE),0,'#FA4E4E','#DD4646');
+var tetrisPiece3 = new tetrisPiece(randNumberWithMultiple(0, GRIDWIDTH, BLOCK_SIZE),0,'#FA4E4E','#DD4646');
 
 var piecesArray = [];
 piecesArray.push(tetrisPiece1);
 piecesArray.push(tetrisPiece2);
-// piecesArray.push(tetrisPiece3);
+piecesArray.push(tetrisPiece3);
 
 /***************************
 Game start
@@ -218,12 +240,14 @@ function init() {
 
         dropPiece(piecesArray[count]);
         drawBackground();
-        
+
         for (var j = 0; j < piecesArray.length; j++) {
             if (piecesArray[j].visible) {  
                 piecesArray[j].draw(piecesArray[j].posGridRow, piecesArray[j].posGridCol);
             }
         }
+        console.log("landed: " + landed);
+console.log("active: " + active);
 
     }    
 
@@ -232,7 +256,7 @@ function init() {
         piece.posGridRow++; 
 
         // inelegant way of wiping active array. Jerky movements.
-        for (var i = 0; i < NUM_ROWS; i ++) {
+        for (var i = 0; i < NUM_ROWS; i++) {
             for (var j = 0; j < NUM_COLS; j++) {
                 active[i][j] = 0;
             }
@@ -242,15 +266,10 @@ function init() {
 
     var setPiece = function(currentPiece) {
 
-        // if (currentPiece.posGridRow >= (canvas.height - currentPiece.height)) { 
-        // console.log("currentPiece posGridRow: " + currentPiece.posGridRow);
-        console.log("active: " + active);
-
         if (currentPiece.posGridRow >= (NUM_ROWS - currentPiece.height)) { 
             count++;
-            // BUG: only 1 square is inserted
-            landed[currentPiece.posGridRow][currentPiece.posGridCol] = 1;
-            console.log("landed: " + landed);
+
+            formLanded(currentPiece.shape,currentPiece.direction, currentPiece.posGridRow,currentPiece.posGridCol);
 
             if (count < piecesArray.length) {
                 dropPiece(piecesArray[count]);
@@ -258,9 +277,28 @@ function init() {
             else {
                 endGame();
             }
-
         }
     }
+
+    function formLanded(shape, direction, gridRow, gridCol) {
+        var gridRowOrig = gridRow;
+        var gridColOrig = gridCol;
+
+        for (var col = 0; col < shape.length; col++) {
+            for (var row = 0; row < shape[direction].length; row++) { 
+
+                if ((shape[direction][row][col]) == 1 ) {
+                    landed[gridRow][gridCol] = 1;
+                }
+                gridCol++;
+            }
+
+            // reset to first column
+            gridCol = gridColOrig;
+            gridRow++;
+        }
+    }
+
 
     function endGame() {
         clearInterval(gameLoop);
