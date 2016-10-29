@@ -1,6 +1,7 @@
 /***************************
 MATRIX PROBLEMS:
-- landed array isn't doing anything.
+- landed array and active array become the same. so collision is always true.
+- active array not being wiped.
 - active array - same color and shape for all pieces.
 - rotation is weird.
 
@@ -39,17 +40,20 @@ var shapes = [I,J,L,O,S,T,Z];
 
 // create empty active matrix
 var active = [];
+var landed = [];
 
 for (var i = 0; i< NUM_ROWS;i ++) {
     active[i] = new Array();
+    landed[i] = new Array();
     for (j = 0; j < NUM_COLS;j++) {
         active[i][j] = 0;
+        landed[i][j] = 0;
     }
 }
 
-var landed = active.map(function(array) {
-    return array.slice();
-});
+// var landed = active.map(function(array) {
+//     return array.slice();
+// });
 
 var collision = false;
 
@@ -138,14 +142,16 @@ function detectCollision(matrix1, matrix2) {
         for (var col = 0; col < matrix1[0].length; col++) {
             if ((matrix1[row][col] == 1) && (matrix2[row][col] == 1)) {
                 collision = true;
-                break;
+                console.log("matrix1_landed: ");
+                console.log(matrix1);
+                console.log("matrix2_active: ");
+                console.log(matrix2);
+                console.log("collision: " + collision);
+                return;
             }
             else {
                 continue;
             }
-            // if (matrix1 === matrix2) {
-            //     alert("same");
-            // }
         }
     }
 }
@@ -157,13 +163,8 @@ function formBrick(shape, direction, gridRow, gridCol) {
     for (var col = 0; col < shape.length; col++) {
         for (var row = 0; row < shape[direction].length; row++) { 
 
-            if ((shape[direction][row][col]) == 1 ) {
-                // if (!collision) {
-                    active[gridRow][gridCol] = 1;
-                // }
-                // else {
-                //     return;
-                // }
+            if (shape[direction][row][col] == 1 ) {
+                active[gridRow][gridCol] = 1;
             }
             gridCol++;
         }
@@ -178,8 +179,6 @@ function drawBrick(fillColor, strokeColor) {
     for (var row = 0; row < active.length; row++) {
         for (var col = 0; col < active[0].length; col++) {
 
-            // console.log("landed: " + landed);
-            // console.log("active: " + active);
             detectCollision(landed, active);
 
             if (active[row][col] == 1) {
@@ -196,6 +195,26 @@ function drawBrick(fillColor, strokeColor) {
         }
     }
 
+}
+
+
+function formLanded(shape, direction, gridRow, gridCol) {
+    var gridRowOrig = gridRow;
+    var gridColOrig = gridCol;
+
+    for (var col = 0; col < shape.length; col++) {
+        for (var row = 0; row < shape[direction].length; row++) { 
+
+            if ((shape[direction][row][col]) == 1 ) {
+                landed[gridRow][gridCol] = 1;
+            }
+            gridCol++;
+        }
+
+        // reset to first column
+        gridCol = gridColOrig;
+        gridRow++;
+    }
 }
 
 function drawLanded(fillColor, strokeColor) {
@@ -218,12 +237,12 @@ function drawLanded(fillColor, strokeColor) {
 
 var tetrisPiece1 = new tetrisPiece(randNumberWithMultiple(0, GRIDWIDTH, BLOCK_SIZE),0,'#66999B','#1E8C91');
 var tetrisPiece2 = new tetrisPiece(randNumberWithMultiple(0, GRIDWIDTH, BLOCK_SIZE),0,'#F5A623','#D08916');
-var tetrisPiece3 = new tetrisPiece(randNumberWithMultiple(0, GRIDWIDTH, BLOCK_SIZE),0,'#FA4E4E','#DD4646');
+// var tetrisPiece3 = new tetrisPiece(randNumberWithMultiple(0, GRIDWIDTH, BLOCK_SIZE),0,'#FA4E4E','#DD4646');
 
 var piecesArray = [];
 piecesArray.push(tetrisPiece1);
 piecesArray.push(tetrisPiece2);
-piecesArray.push(tetrisPiece3);
+// piecesArray.push(tetrisPiece3);
 
 /***************************
 Game start
@@ -246,14 +265,14 @@ function init() {
                 piecesArray[j].draw(piecesArray[j].posGridRow, piecesArray[j].posGridCol);
             }
         }
-        console.log("landed: " + landed);
-console.log("active: " + active);
-
     }    
 
     var dropPiece = function(piece) {
         piece.visible = true;
         piece.posGridRow++; 
+
+        console.log('before')
+        console.log(active);
 
         // inelegant way of wiping active array. Jerky movements.
         for (var i = 0; i < NUM_ROWS; i++) {
@@ -261,6 +280,8 @@ console.log("active: " + active);
                 active[i][j] = 0;
             }
         }
+        console.log('after')
+console.log(active);
         setPiece(piece);
     }
 
@@ -277,25 +298,6 @@ console.log("active: " + active);
             else {
                 endGame();
             }
-        }
-    }
-
-    function formLanded(shape, direction, gridRow, gridCol) {
-        var gridRowOrig = gridRow;
-        var gridColOrig = gridCol;
-
-        for (var col = 0; col < shape.length; col++) {
-            for (var row = 0; row < shape[direction].length; row++) { 
-
-                if ((shape[direction][row][col]) == 1 ) {
-                    landed[gridRow][gridCol] = 1;
-                }
-                gridCol++;
-            }
-
-            // reset to first column
-            gridCol = gridColOrig;
-            gridRow++;
         }
     }
 
