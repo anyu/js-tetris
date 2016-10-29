@@ -37,51 +37,30 @@ var GRIDHEIGHT = BLOCK_SIZE * 20;
 
 var shapes = [I,J,L,O,S,T,Z];
 
-
-// create empty active matrix
-var active = [];
 var landed = [];
 
 for (var i = 0; i< NUM_ROWS;i ++) {
-    active[i] = new Array();
     landed[i] = new Array();
     for (j = 0; j < NUM_COLS;j++) {
-        active[i][j] = 0;
         landed[i][j] = 0;
     }
 }
 
-// var landed = active.map(function(array) {
-//     return array.slice();
-// });
-
 var collision = false;
-
-
-/***************************
-Testing with simple case
-/***************************/
-
-// var sample = [
-//         [1, 2, 3, 4],
-//         [5, 6, 7, 8],
-//         [9, 10, 11, 12],
-//         [13, 14, 15, 16],
-// ];
-
-
 var count = 0;
 
 var tetrisPiece = function (gridRow, gridCol, fillColor, strokeColor) {
 
-    this.posGridCol = 0;
     this.posGridRow = 0;
+    this.posGridCol = 0;
+    this.potentialPosGridRow = 0;
+    this.potentialPosGridCol = 0;
     // this.height = BLOCK_SIZE *3;
     // this.width = BLOCK_SIZE *2;
     this.height = 4;
     this.width = 4;
     this.shape = shapes[randomShape()];
-    this.direction = randomDirection();
+    this.direction = randomDirection(this.shape);
     // this.shape = T;
     // this.direction = 0;
     this.fillColor = fillColor;
@@ -89,8 +68,7 @@ var tetrisPiece = function (gridRow, gridCol, fillColor, strokeColor) {
     this.visible = false;
 
     tetrisPiece.prototype.draw = function() {
-        formBrick(this.shape, this.direction, this.posGridRow, this.posGridCol);
-        drawBrick(this.fillColor, this.strokeColor);
+        formBrick(this.shape, this.direction, this.posGridRow, this.posGridCol, this.fillColor, this.strokeColor);
     }
     
     // Loop through possible directions
@@ -127,8 +105,8 @@ function randomShape() {
     return result;
 } 
 
-function randomDirection() {
-    var result = Math.floor(Math.random() * shapes[randomShape()].length)
+function randomDirection(shape) {
+    var result = Math.floor(Math.random() * shape.length)
     return result;
 } 
 
@@ -137,34 +115,39 @@ function randNumberWithMultiple(min, max, multiple) {
     return result;
 }
 
-function detectCollision(matrix1, matrix2) {
-    for (var row = 0; row < matrix1.length; row++) {
-        for (var col = 0; col < matrix1[0].length; col++) {
-            if ((matrix1[row][col] == 1) && (matrix2[row][col] == 1)) {
-                collision = true;
-                console.log("matrix1_landed: ");
-                console.log(matrix1);
-                console.log("matrix2_active: ");
-                console.log(matrix2);
-                console.log("collision: " + collision);
-                return;
-            }
-            else {
-                continue;
+function detectCollision(currentPiece) {
+    for (var row = 0; row < currentPiece.shape[currentPiece.direction][0].length; row++) {
+        for (var col = 0; col < currentPiece.shape[currentPiece.direction][0][0].length; col++) {
+
+            console.log("row: " + row);
+            console.log("col: " + col);
+            console.log(currentPiece);
+
+            if (currentPiece.shape[currentPiece.direction][row][col] == 1 ) {
+                if (landed[currentPiece.potentialPosGridRow + row] == 1 && 
+                    landed[currentPiece.potentialPosGridCol + col] == 1) {
+                    collision = true;
+                }               
             }
         }
     }
 }
 
-function formBrick(shape, direction, gridRow, gridCol) {
+function formBrick(shape, direction, gridRow, gridCol,fillColor, strokeColor) {
     var gridRowOrig = gridRow;
     var gridColOrig = gridCol;
 
-    for (var col = 0; col < shape.length; col++) {
-        for (var row = 0; row < shape[direction].length; row++) { 
+    for (var row = 0; row < shape.length; row++) {
+        for (var col = 0; col < shape[direction].length; col++) { 
 
-            if (shape[direction][row][col] == 1 ) {
-                active[gridRow][gridCol] = 1;
+            if (shape[direction][row][col] == 1) {
+                context.beginPath();
+                context.rect(gridCol*BLOCK_SIZE, gridRow*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+                context.lineWidth = 1;
+                context.fillStyle = fillColor;
+                context.strokeStyle = strokeColor;
+                context.fill();
+                context.stroke();
             }
             gridCol++;
         }
@@ -175,38 +158,22 @@ function formBrick(shape, direction, gridRow, gridCol) {
     }
 }
 
-function drawBrick(fillColor, strokeColor) {
-    for (var row = 0; row < active.length; row++) {
-        for (var col = 0; col < active[0].length; col++) {
-
-            detectCollision(landed, active);
-
-            if (active[row][col] == 1) {
-            // if (active[row][col] == 1 && !collision) {
-                context.beginPath();
-                context.rect(col*BLOCK_SIZE, row*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
-                context.lineWidth = 1;
-                context.fillStyle = fillColor;
-                context.strokeStyle = strokeColor;
-                context.fill();
-                context.stroke();
-            // }   
-            }
-        }
-    }
-
-}
-
-
-function formLanded(shape, direction, gridRow, gridCol) {
+function storeInLanded(shape, direction, gridRow, gridCol, fillColor, strokeColor) {
     var gridRowOrig = gridRow;
     var gridColOrig = gridCol;
 
-    for (var col = 0; col < shape.length; col++) {
-        for (var row = 0; row < shape[direction].length; row++) { 
+    for (var row = 0; row < shape.length; row++) {
+        for (var col = 0; col < shape[direction].length; col++) { 
 
             if ((shape[direction][row][col]) == 1 ) {
                 landed[gridRow][gridCol] = 1;
+                context.beginPath();
+                context.rect(gridCol*BLOCK_SIZE, gridRow*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+                context.lineWidth = 1;
+                context.fillStyle = fillColor;
+                context.strokeStyle = strokeColor;
+                context.fill();
+                context.stroke();
             }
             gridCol++;
         }
@@ -215,24 +182,7 @@ function formLanded(shape, direction, gridRow, gridCol) {
         gridCol = gridColOrig;
         gridRow++;
     }
-}
-
-function drawLanded(fillColor, strokeColor) {
-    for (var row = 0; row < landed.length; row++) {
-        for (var col = 0; col < landed[0].length; col++) {
-
-            if (landed[row][col] == 1) {
-                context.beginPath();
-                context.rect(col*BLOCK_SIZE, row*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
-                context.lineWidth = 1;
-                context.fillStyle = fillColor;
-                context.strokeStyle = strokeColor;
-                context.fill();
-                context.stroke();
-            }
-        }
-    }
-
+    console.log("landed: " + landed);
 }
 
 var tetrisPiece1 = new tetrisPiece(randNumberWithMultiple(0, GRIDWIDTH, BLOCK_SIZE),0,'#66999B','#1E8C91');
@@ -262,6 +212,7 @@ function init() {
 
         for (var j = 0; j < piecesArray.length; j++) {
             if (piecesArray[j].visible) {  
+                detectCollision(piecesArray[j]);
                 piecesArray[j].draw(piecesArray[j].posGridRow, piecesArray[j].posGridCol);
             }
         }
@@ -271,17 +222,6 @@ function init() {
         piece.visible = true;
         piece.posGridRow++; 
 
-        console.log('before')
-        console.log(active);
-
-        // inelegant way of wiping active array. Jerky movements.
-        for (var i = 0; i < NUM_ROWS; i++) {
-            for (var j = 0; j < NUM_COLS; j++) {
-                active[i][j] = 0;
-            }
-        }
-        console.log('after')
-console.log(active);
         setPiece(piece);
     }
 
@@ -290,7 +230,7 @@ console.log(active);
         if (currentPiece.posGridRow >= (NUM_ROWS - currentPiece.height)) { 
             count++;
 
-            formLanded(currentPiece.shape,currentPiece.direction, currentPiece.posGridRow,currentPiece.posGridCol);
+            storeInLanded(currentPiece.shape,currentPiece.direction, currentPiece.posGridRow,currentPiece.posGridCol, currentPiece.fillColor, currentPiece.strokeColor);
 
             if (count < piecesArray.length) {
                 dropPiece(piecesArray[count]);
@@ -300,7 +240,6 @@ console.log(active);
             }
         }
     }
-
 
     function endGame() {
         clearInterval(gameLoop);
