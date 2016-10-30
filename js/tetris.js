@@ -1,17 +1,4 @@
 /***************************
-MATRIX PROBLEMS:
-- landed array and active array become the same. so collision is always true.
-- active array not being wiped.
-- active array - same color and shape for all pieces.
-- rotation is weird.
-
-CURRENT BUGS: 
-1) O shape doesn't show in certain directions - length undefined error
-2) Left bound keeps going invisibly offscreen - affects moving right 
-3) Right bound not set
-4) Bottom bound not complete
-
-/***************************
 NEXT:
 - Make pieces stop on collision
 - Once a row is filled, make it disappear
@@ -53,8 +40,8 @@ var tetrisPiece = function (gridRow, gridCol, fillColor, strokeColor) {
 
     this.posGridRow = 0;
     this.posGridCol = 0;
-    this.potentialPosGridRow = 0;
-    this.potentialPosGridCol = 0;
+    this.potentialPosGridRow = this.posGridRow+1;
+    this.potentialPosGridCol = this.posGridCol;
     // this.height = BLOCK_SIZE *3;
     // this.width = BLOCK_SIZE *2;
     this.height = 4;
@@ -68,7 +55,7 @@ var tetrisPiece = function (gridRow, gridCol, fillColor, strokeColor) {
     this.visible = false;
 
     tetrisPiece.prototype.draw = function() {
-        formBrick(this.shape, this.direction, this.posGridRow, this.posGridCol, this.fillColor, this.strokeColor);
+        formBrick(this.shape, this.direction, this.posGridRow, this.posGridCol, this.fillColor, this.strokeColor, this.potentialPosGridRow, this.potentialPosGridCol);
     }
     
     // Loop through possible directions
@@ -115,32 +102,41 @@ function randNumberWithMultiple(min, max, multiple) {
     return result;
 }
 
-function detectCollision(currentPiece) {
-    for (var row = 0; row < currentPiece.shape[currentPiece.direction][0].length; row++) {
-        for (var col = 0; col < currentPiece.shape[currentPiece.direction][0][0].length; col++) {
+// function detectCollision(currentPiece) {
+//     currentPiece.potentialPosGridRow+=1;
+//     for (var row = 0; row < currentPiece.shape[currentPiece.direction][0].length; row++) {
+//         for (var col = 0; col < currentPiece.shape[currentPiece.direction].length; col++) {
 
-            console.log("row: " + row);
-            console.log("col: " + col);
-            console.log(currentPiece);
+//             if (currentPiece.shape[currentPiece.direction][row][col] == 1 ) {
+//                 console.log("row: " + row);
+//                 console.log("col: " + col);
+//                 if (landed[currentPiece.potentialPosGridRow + row] == 1 && 
+//                     landed[currentPiece.potentialPosGridCol + col] == 1) {
+//                     collision = true;
+//                 }               
+//             }
+//         }
+//     }
+// }
 
-            if (currentPiece.shape[currentPiece.direction][row][col] == 1 ) {
-                if (landed[currentPiece.potentialPosGridRow + row] == 1 && 
-                    landed[currentPiece.potentialPosGridCol + col] == 1) {
-                    collision = true;
-                }               
-            }
-        }
-    }
-}
-
-function formBrick(shape, direction, gridRow, gridCol,fillColor, strokeColor) {
+function formBrick(shape, direction, gridRow, gridCol,fillColor, strokeColor, potentialPosGridRow, potentialPosGridCol) {
     var gridRowOrig = gridRow;
     var gridColOrig = gridCol;
 
-    for (var row = 0; row < shape.length; row++) {
+    for (var row = 0; row < shape[direction][0].length; row++) {
         for (var col = 0; col < shape[direction].length; col++) { 
 
             if (shape[direction][row][col] == 1) {
+                if (landed[potentialPosGridRow + row][potentialPosGridCol + col] == 1) { 
+                    collision = true;
+                    storeInLanded(shape, direction, gridRow,gridCol);
+
+                    alert("COLLISION");
+                }     
+                else {
+                    shape.gridRow = shape.potentialPosGridRow;
+                    shape.gridCol = shape.potentialPosGridCol;
+                }
                 context.beginPath();
                 context.rect(gridCol*BLOCK_SIZE, gridRow*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
                 context.lineWidth = 1;
@@ -158,22 +154,15 @@ function formBrick(shape, direction, gridRow, gridCol,fillColor, strokeColor) {
     }
 }
 
-function storeInLanded(shape, direction, gridRow, gridCol, fillColor, strokeColor) {
+function storeInLanded(shape, direction, gridRow, gridCol) {
     var gridRowOrig = gridRow;
     var gridColOrig = gridCol;
 
-    for (var row = 0; row < shape.length; row++) {
+    for (var row = 0; row < shape[direction][0].length; row++) {
         for (var col = 0; col < shape[direction].length; col++) { 
 
             if ((shape[direction][row][col]) == 1 ) {
-                landed[gridRow][gridCol] = 1;
-                context.beginPath();
-                context.rect(gridCol*BLOCK_SIZE, gridRow*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
-                context.lineWidth = 1;
-                context.fillStyle = fillColor;
-                context.strokeStyle = strokeColor;
-                context.fill();
-                context.stroke();
+                landed[gridRow + row][gridCol + col] = 1;
             }
             gridCol++;
         }
@@ -182,7 +171,24 @@ function storeInLanded(shape, direction, gridRow, gridCol, fillColor, strokeColo
         gridCol = gridColOrig;
         gridRow++;
     }
-    console.log("landed: " + landed);
+}
+
+function drawLanded(fillColor, strokeColor) {
+    for (var row = 0; row < landed.length; row++) {
+        for (var col = 0; col < landed[0].length; col++) {
+
+            if (landed[row][col] == 1) {
+                context.beginPath();
+                context.rect(col*BLOCK_SIZE, row*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
+                context.lineWidth = 1;
+                context.fillStyle = fillColor;
+                context.strokeStyle = strokeColor;
+                context.fill();
+                context.stroke();
+            }
+        }
+    }
+
 }
 
 var tetrisPiece1 = new tetrisPiece(randNumberWithMultiple(0, GRIDWIDTH, BLOCK_SIZE),0,'#66999B','#1E8C91');
@@ -212,7 +218,6 @@ function init() {
 
         for (var j = 0; j < piecesArray.length; j++) {
             if (piecesArray[j].visible) {  
-                detectCollision(piecesArray[j]);
                 piecesArray[j].draw(piecesArray[j].posGridRow, piecesArray[j].posGridCol);
             }
         }
@@ -226,11 +231,10 @@ function init() {
     }
 
     var setPiece = function(currentPiece) {
-
-        if (currentPiece.posGridRow >= (NUM_ROWS - currentPiece.height)) { 
+        if (currentPiece.posGridRow + currentPiece.height >= landed.length) {
             count++;
-
-            storeInLanded(currentPiece.shape,currentPiece.direction, currentPiece.posGridRow,currentPiece.posGridCol, currentPiece.fillColor, currentPiece.strokeColor);
+            storeInLanded(currentPiece.shape,currentPiece.direction, currentPiece.posGridRow,currentPiece.posGridCol);
+            drawLanded(currentPiece.fillColor, currentPiece.strokeColor);
 
             if (count < piecesArray.length) {
                 dropPiece(piecesArray[count]);
