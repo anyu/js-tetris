@@ -40,8 +40,8 @@ var tetrisPiece = function (gridRow, gridCol, fillColor, strokeColor) {
 
     this.posGridRow = 0;
     this.posGridCol = 0;
-    this.potentialPosGridRow = this.posGridRow+1;
-    this.potentialPosGridCol = this.posGridCol;
+    // this.potentialPosGridRow = this.posGridRow+1;
+    // this.potentialPosGridCol = this.posGridCol;
     // this.height = BLOCK_SIZE *3;
     // this.width = BLOCK_SIZE *2;
     this.height = 4;
@@ -55,7 +55,7 @@ var tetrisPiece = function (gridRow, gridCol, fillColor, strokeColor) {
     this.visible = false;
 
     tetrisPiece.prototype.draw = function() {
-        formBrick(this.shape, this.direction, this.posGridRow, this.posGridCol, this.fillColor, this.strokeColor, this.potentialPosGridRow, this.potentialPosGridCol);
+        formBrick(this.shape, this.direction, this.posGridRow, this.posGridCol, this.fillColor, this.strokeColor);
     }
     
     // Loop through possible directions
@@ -119,7 +119,7 @@ function randNumberWithMultiple(min, max, multiple) {
 //     }
 // }
 
-function formBrick(shape, direction, gridRow, gridCol,fillColor, strokeColor, potentialPosGridRow, potentialPosGridCol) {
+function formBrick(shape, direction, gridRow, gridCol,fillColor, strokeColor) {
     var gridRowOrig = gridRow;
     var gridColOrig = gridCol;
 
@@ -127,16 +127,15 @@ function formBrick(shape, direction, gridRow, gridCol,fillColor, strokeColor, po
         for (var col = 0; col < shape[direction].length; col++) { 
 
             if (shape[direction][row][col] == 1) {
-                if (landed[potentialPosGridRow + row][potentialPosGridCol + col] == 1) { 
-                    collision = true;
-                    storeInLanded(shape, direction, gridRow,gridCol);
+                // if (landed[potentialPosGridRow + row][potentialPosGridCol + col] == 1) { 
+                //     collision = true;
+                    // storeInLanded(shape, direction, gridRow,gridCol);
 
-                    alert("COLLISION");
                 }     
-                else {
-                    shape.gridRow = shape.potentialPosGridRow;
-                    shape.gridCol = shape.potentialPosGridCol;
-                }
+                // else {
+                //     shape.gridRow = shape.potentialPosGridRow;
+                //     shape.gridCol = shape.potentialPosGridCol;
+                // }
                 context.beginPath();
                 context.rect(gridCol*BLOCK_SIZE, gridRow*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
                 context.lineWidth = 1;
@@ -151,7 +150,7 @@ function formBrick(shape, direction, gridRow, gridCol,fillColor, strokeColor, po
         // reset to first column
         gridCol = gridColOrig;
         gridRow++;
-    }
+    // }
 }
 
 function storeInLanded(shape, direction, gridRow, gridCol) {
