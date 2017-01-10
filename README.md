@@ -1,3 +1,3 @@
-# js-tetris
+# JavaScript Tetris
 
 Work in progress
